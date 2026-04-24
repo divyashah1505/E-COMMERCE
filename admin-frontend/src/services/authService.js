@@ -8,7 +8,7 @@ export const authService = {
    */
   loginAdmin: async (credentials) => {
     try {
-      const response = await axiosInstance.post('/admin/loginAdmin', credentials);
+      const response = await axiosInstance.post('/loginAdmin', credentials);
       return response.data;
     } catch (error) {
       console.error('Login error:', error);

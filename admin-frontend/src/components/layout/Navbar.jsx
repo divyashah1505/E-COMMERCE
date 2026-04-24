@@ -28,8 +28,8 @@ const Navbar = () => {
         >
           <Menu size={22} className="group-hover:scale-110 transition-transform" />
         </button>
-        
-        <div className="hidden md:flex items-center bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-3 w-96 focus-within:border-primary/50 focus-within:bg-white dark:focus-within:bg-white/10 transition-all shadow-inner group">
+
+        {/* <div className="hidden md:flex items-center bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-3 w-96 focus-within:border-primary/50 focus-within:bg-white dark:focus-within:bg-white/10 transition-all shadow-inner group">
           <Search size={18} className="text-gray-400 mr-3 group-focus-within:text-primary transition-colors" />
           <input 
             type="text" 
@@ -39,35 +39,35 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-1.5 bg-gray-200 dark:bg-white/10 px-2.5 py-1 rounded-lg text-xs text-gray-500 dark:text-gray-400 font-mono shadow-sm">
             <span>⌘</span><span>K</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex items-center gap-5">
-        <button className="p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all relative group">
+        {/* <button className="p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all relative group">
           <Bell size={22} className="group-hover:animate-[wiggle_1s_ease-in-out_infinite]" />
           <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-pink-500 rounded-full border-2 border-white dark:border-background shadow-neon animate-pulse"></span>
-        </button>
+        </button> */}
 
-        <button
+        {/* <button
           onClick={() => dispatch(toggleTheme())}
           className="p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all group"
         >
           {mode === 'dark' ? <Sparkles size={22} className="text-primary group-hover:rotate-12 transition-transform" /> : <Moon size={22} className="group-hover:-rotate-12 transition-transform" />}
-        </button>
+        </button> */}
 
         <div className="flex items-center gap-5 ml-4 pl-8 border-l border-gray-200 dark:border-white/10">
           <div className="hidden sm:block text-right">
             <p className="text-base font-black text-gray-900 dark:text-white leading-tight tracking-tight">{admin?.username || 'Admin'}</p>
             <p className="text-xs text-primary font-bold tracking-widest uppercase mt-0.5">Super Admin</p>
           </div>
-          
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary to-pink-500 flex items-center justify-center text-white font-black text-xl shadow-neon cursor-pointer transition-transform duration-500 hover:scale-110 hover:rotate-3">
-             {admin?.username?.charAt(0).toUpperCase() || 'M'}
+
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary to-blue-500 flex items-center justify-center text-white font-blue text-xl shadow cursor-pointer transition-transform duration-500 hover:scale-110 hover:rotate-3">
+            {admin?.username?.charAt(0).toUpperCase() || 'M'}
           </div>
 
           <button
             onClick={handleLogout}
-            className="ml-2 p-3 text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+            className="ml-2 p-3 text-black-400 hover:text-blue-500 hover:bg-black-50 dark:hover:bg-black/5 rounded-2xl transition-all"
             title="Disconnect"
           >
             <LogOut size={22} strokeWidth={2.5} />

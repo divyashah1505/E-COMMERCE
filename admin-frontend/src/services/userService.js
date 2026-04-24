@@ -7,7 +7,7 @@ export const userService = {
    */
   getUserList: async (params = {}) => {
     try {
-      const response = await axiosInstance.get('/admin/user-list', { params });
+      const response = await axiosInstance.get('/user-list', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching user list:', error);
@@ -21,7 +21,7 @@ export const userService = {
    */
   deleteUser: async (userId) => {
     try {
-      const response = await axiosInstance.delete(`/admin/user/${userId}`);
+      const response = await axiosInstance.delete(`/user/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -36,7 +36,7 @@ export const userService = {
   activateUser: async (userId) => {
     try {
       // Note: Assuming the route is prefixed with /admin based on your other routes
-      const response = await axiosInstance.put(`/admin/user/activate/${userId}`);
+      const response = await axiosInstance.put(`/user/activate/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error activating user:', error);

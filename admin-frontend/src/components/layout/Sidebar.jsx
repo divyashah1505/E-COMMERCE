@@ -1,37 +1,34 @@
 import { NavLink } from 'react-router-dom';
 import { PATHS } from '../../routes/routePaths';
-import { LayoutGrid, Users, Layers, Shirt, ShoppingBag, Flame, Settings, LogOut } from 'lucide-react';
+import { LayoutGrid, Users, Layers, Tag, ShoppingBag, Settings, LogOut } from 'lucide-react'; // Added Tag
 import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
   const { sidebarCollapsed } = useSelector((state) => state.ui);
 
-  const links = [
+const links = [
     { name: 'Dashboard', path: PATHS.DASHBOARD, icon: <LayoutGrid size={20} /> },
     { name: 'Customers', path: PATHS.USERS, icon: <Users size={20} /> },
     { name: 'Categories', path: PATHS.CATEGORIES, icon: <Layers size={20} /> },
-    { name: 'Sub-Categories', path: PATHS.PRODUCTS, icon: <Shirt size={20} /> },
-    { name: 'Products', path: PATHS.ORDERS, icon: <ShoppingBag size={20} /> },
-    { name: 'Subscriptions', path: PATHS.PROMO, icon: <Flame size={20} /> },
+    { name: 'PromoCode', path: PATHS.PROMO, icon: <Tag size={20} /> },
+    // Change PATHS.ORDERS to PATHS.SUBSCRIPTIONS here
+    { name: 'Subscriptions', path: PATHS.SUBSCRIPTIONS, icon: <ShoppingBag size={20} /> },
     { name: 'Settings', path: PATHS.PAYMENTS, icon: <Settings size={20} /> },
   ];
-
   return (
     <div className={`h-screen bg-white dark:bg-[#09090B] border-r border-slate-200 dark:border-white/5 transition-all duration-500 flex flex-col z-20 ${sidebarCollapsed ? 'w-24' : 'w-72'}`}>
-      {/* Branding */}
       <div className="h-28 flex items-center px-8">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-200">C</div>
           {!sidebarCollapsed && (
             <div className="flex flex-col">
               <span className="font-black text-xl tracking-tight text-slate-900 dark:text-white uppercase">Clothiq</span>
-              <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest leading-none">Clothiq Super Admin</span>
+              <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest leading-none">Super Admin</span>
             </div>
           )}
         </div>
       </div>
       
-      {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-4 px-4">
         {!sidebarCollapsed && <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6 pl-4">Management</p>}
         <nav className="space-y-1.5">
@@ -54,7 +51,6 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {/* Logout / Footer */}
       <div className="p-6 border-t border-slate-100 dark:border-white/5">
         <button className={`flex items-center text-rose-500 font-bold text-sm gap-4 hover:bg-rose-50 p-4 rounded-2xl w-full transition-all ${sidebarCollapsed && 'justify-center'}`}>
           <LogOut size={20} />

@@ -17,6 +17,8 @@ import CustomerList from '../pages/auth/customerList';
 import CategoryList from '../pages/auth/categoryList';
 import SubcategoryList from '../pages/auth/subcategoryList';
 import ProductList from '../pages/auth/productList'; 
+import PromoCodeList from '../pages/auth/promoCodeList'; // Added this import
+import SubscriptionList from '../pages/auth/suuScriptionList'; // Corrected import
 
 export default function Routes() {
   return useRoutes([
@@ -81,14 +83,23 @@ export default function Routes() {
           path: 'products',
           children: [
              { path: '', element: <ProductList /> },
-             // You can add PRODUCTS_ADD and PRODUCTS_EDIT routes here as well
           ]
         },
 
         // --- Additional Modules ---
         { path: PATHS.ORDERS, element: <div className="p-8">Orders Registry</div> },
         { path: PATHS.PAYMENTS, element: <div className="p-8">Payment Protocol</div> },
-        { path: PATHS.PROMO, element: <div className="p-8">Promotion Modules</div> },
+        
+        // --- Updated Promo Route ---
+        { 
+          path: PATHS.PROMO, 
+          element: <PromoCodeList /> 
+        }, 
+              { 
+          path: PATHS.SUBSCRIPTIONS, // Make sure PATHS.SUBSCRIPTIONS is defined
+          element: <SubscriptionList /> 
+        },
+        
         { path: PATHS.MEMBERSHIP, element: <div className="p-8">Membership System</div> },
       ],
     },

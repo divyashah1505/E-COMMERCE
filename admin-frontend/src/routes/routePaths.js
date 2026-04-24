@@ -16,6 +16,7 @@ export const PATHS = {
   CATEGORIES_EDIT: '/categories/edit/:id',
   SUBCATEGORIES: '/categories/:categoryId/subcategories',
   SUBCATEGORY_PRODUCTS: '/categories/:categoryId/subcategories/:subcategoryId/products',
+  SUBSCRIPTIONS: '/subscriptions', 
 
   PRODUCTS: '/products',
   PRODUCTS_ADD: '/products/add',
