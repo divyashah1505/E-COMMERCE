@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  Search, Plus, Edit3, Tag, Calendar, Percent, 
+  Search, Plus, Edit3, Tag, Percent, 
   Loader2, DollarSign, X, Power, PowerOff, 
-  ShieldCheck, ShieldAlert, ArrowRight 
+  ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import { promoCodeService } from '../../services/promoCodeService';
 import { toast } from 'react-hot-toast';
@@ -108,31 +108,32 @@ const PromoCodeList = () => {
   };
 
   return (
-    <div className="p-10 bg-[#F1F5F9] dark:bg-[#020617] min-h-screen font-sans antialiased text-slate-900">
+    <div className="premium-page">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <div className="premium-shell">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h1 className="text-6xl font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-none">
             PROMO <span className="text-indigo-600">Code</span>
           </h1>
           <p className="text-slate-500 font-bold uppercase tracking-[0.3em] text-xs mt-4 ml-1">Enterprise Discount Management</p>
         </div>
-        <button 
+        <button
           onClick={handleAddClick}
-          className="flex items-center justify-center gap-3 bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black shadow-[0_20px_40px_rgba(79,70,229,0.25)] hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 text-sm uppercase tracking-[0.2em]"
+          className="premium-btn premium-btn-primary px-6 py-3.5 text-sm uppercase tracking-[0.14em]"
         >
-          <Plus size={20} strokeWidth={4} />
+          <Plus size={18} strokeWidth={3} />
           Generate New Promo
         </button>
       </div>
 
       {/* SEARCH SYSTEM */}
-      <div className="relative mb-12">
-        <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
+      <div className="relative mb-8">
+        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
         <input
           type="text"
           placeholder="SEARCH REGISTRY BY CODE OR BENEFIT..."
-          className="w-full pl-20 pr-10 py-8 bg-white dark:bg-[#0F172A] border-2 border-transparent focus:border-indigo-600/20 rounded-[2.5rem] shadow-xl shadow-slate-200/40 dark:shadow-none outline-none font-black text-slate-800 dark:text-white placeholder:text-slate-300 uppercase tracking-widest transition-all"
+          className="w-full pl-12 pr-6 py-3.5 bg-white/80 dark:bg-[#0F172A]/70 border border-slate-200 dark:border-white/10 rounded-2xl outline-none text-sm text-slate-800 dark:text-white placeholder:text-slate-400 transition-all focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -142,7 +143,7 @@ const PromoCodeList = () => {
       </div>
 
       {/* DATA ARCHITECTURE */}
-      <div className="bg-white dark:bg-[#0F172A] rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-white/5 overflow-hidden">
+      <div className="premium-table-shell">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -164,11 +165,11 @@ const PromoCodeList = () => {
                 </tr>
               ) : (
                 promos.map((promo) => (
-                  <tr key={promo._id} className="hover:bg-slate-50/50 dark:hover:bg-indigo-500/5 transition-all group">
+                  <tr key={promo._id} className="hover:bg-slate-50/60 dark:hover:bg-indigo-500/5 transition-all group">
                     {/* Identity */}
                     <td className="px-12 py-10">
                       <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 bg-slate-900 dark:bg-indigo-600 rounded-3xl flex items-center justify-center text-white shadow-xl transition-all group-hover:rotate-6">
+                        <div className="w-14 h-14 bg-slate-900 dark:bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all">
                            <Tag size={28} strokeWidth={3} />
                         </div>
                         <div>
@@ -259,9 +260,9 @@ const PromoCodeList = () => {
 
       {/* GLOBAL CONFIGURATION MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="premium-modal">
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative bg-white dark:bg-[#0F172A] w-full max-w-2xl rounded-[4rem] shadow-2xl border-4 border-slate-50 dark:border-white/5 overflow-hidden animate-in fade-in zoom-in duration-300">
+          <div className="relative premium-modal-card max-w-2xl animate-in fade-in zoom-in duration-300">
             
             <div className="px-16 py-14 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-white/[0.02]">
               <div>
@@ -275,14 +276,14 @@ const PromoCodeList = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-16 space-y-12">
+            <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-8">
               <div className="grid grid-cols-2 gap-12">
                 <div className="space-y-4">
                   <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2">Protocol</label>
                   <select 
                     value={formData.type}
                     onChange={(e) => setFormData({...formData, type: Number(e.target.value)})}
-                    className="w-full px-8 py-7 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-[2rem] focus:border-indigo-600 outline-none font-black text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    className="premium-input font-semibold appearance-none cursor-pointer"
                   >
                     <option value={1}>MANUAL ENTRY</option>
                     <option value={0}>AUTO GENERATE</option>
@@ -293,7 +294,7 @@ const PromoCodeList = () => {
                   <select 
                     value={formData.discountType}
                     onChange={(e) => setFormData({...formData, discountType: e.target.value})}
-                    className="w-full px-8 py-7 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-[2rem] focus:border-indigo-600 outline-none font-black text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    className="premium-input font-semibold appearance-none cursor-pointer"
                   >
                     <option value="flat">FLAT CASH</option>
                     <option value="percentage">PERCENT (%)</option>
@@ -307,7 +308,7 @@ const PromoCodeList = () => {
                   <input
                     type="number"
                     required
-                    className="w-full px-12 py-8 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-[2.5rem] focus:border-indigo-600 outline-none font-black text-4xl text-slate-900 dark:text-white placeholder:text-slate-200"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl focus:border-indigo-600 outline-none font-black text-2xl text-slate-900 dark:text-white placeholder:text-slate-200"
                     value={formData.discountValue}
                     onChange={(e) => setFormData({...formData, discountValue: e.target.value})}
                   />
@@ -323,7 +324,7 @@ const PromoCodeList = () => {
                   <input
                     type="date"
                     required
-                    className="w-full px-8 py-7 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-[2rem] focus:border-indigo-600 outline-none font-black text-slate-800 dark:text-white"
+                    className="premium-input font-semibold"
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
                   />
@@ -333,7 +334,7 @@ const PromoCodeList = () => {
                   <input
                     type="date"
                     required
-                    className="w-full px-8 py-7 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-[2rem] focus:border-indigo-600 outline-none font-black text-slate-800 dark:text-white"
+                    className="premium-input font-semibold"
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                   />
@@ -343,7 +344,7 @@ const PromoCodeList = () => {
               <div className="pt-8">
                 <button 
                   type="submit"
-                  className="w-full bg-slate-900 dark:bg-indigo-600 hover:bg-black dark:hover:bg-indigo-700 text-white py-8 rounded-[3rem] font-black shadow-2xl transition-all active:scale-95 text-lg uppercase tracking-[0.6em]"
+                  className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]"
                 >
                   {isEditing ? 'DEPLOY UPDATES' : 'EXECUTE AUTHORIZATION'}
                 </button>
@@ -352,6 +353,7 @@ const PromoCodeList = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

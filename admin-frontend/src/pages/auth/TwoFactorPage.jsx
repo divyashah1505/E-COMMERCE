@@ -13,7 +13,7 @@ const TwoFactorPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (otp.length < 6) {
-      toast.error('OTP must be at least 6 characters');
+      toast.error('Code must be 6 digits');
       return;
     }
 
@@ -21,37 +21,53 @@ const TwoFactorPage = () => {
     // Mock OTP Verification
     setTimeout(() => {
       dispatch(set2FaVerified(true));
-      toast.success('2FA Verified Successfully!');
+      toast.success('Identity verified.', {
+        style: { borderRadius: '8px', background: '#0F172A', color: '#fff' }
+      });
       navigate('/dashboard');
       setLoading(false);
     }, 1000);
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-center mb-6 dark:text-white">Two-Factor Auth</h2>
-      <p className="text-sm text-center text-gray-500 mb-4 dark:text-gray-400">
-        Enter the code from your authenticator app.
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="w-full">
+      <div className="mb-8">
+        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Security Verification</h2>
+        <p className="text-slate-500 dark:text-slate-400">Enter the 6-digit code from your app.</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.12em] mb-4 text-center">Verification Code</label>
           <input
             type="text"
-            className="w-full p-2 border rounded text-center text-2xl tracking-widest dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="premium-input text-center text-4xl tracking-[0.5em] font-bold h-20"
             maxLength={6}
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
             placeholder="000000"
           />
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-primary text-white p-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
-        >
-          {loading ? 'Verifying...' : 'Verify'}
-        </button>
+        
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]"
+          >
+            {loading ? 'Verifying Identity...' : 'Confirm Identity'}
+          </button>
+        </div>
       </form>
+      
+      <div className="mt-8 text-center">
+        <button 
+          onClick={() => navigate('/login')}
+          className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+        >
+          Cancel and return to login
+        </button>
+      </div>
     </div>
   );
 };

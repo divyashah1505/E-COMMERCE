@@ -1,46 +1,69 @@
 import { Outlet } from 'react-router-dom';
+import { ShieldCheck, BarChart3, Hexagon } from 'lucide-react';
 
 const AuthLayout = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-background relative overflow-hidden font-sans selection:bg-primary/30">
-      
-      {/* Animated Background Blobs - Fixed for light mode visibility */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-pink-400/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-blue-400/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#f5f7fb] dark:bg-[#07090f] relative overflow-hidden font-sans selection:bg-blue-600/30">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-16%] left-[-10%] w-[520px] h-[520px] bg-blue-500/20 dark:bg-blue-700/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-18%] right-[-8%] w-[560px] h-[560px] bg-slate-900/10 dark:bg-slate-500/20 rounded-full blur-[120px]" />
+      </div>
 
-      {/* Glass Overlay Pattern */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-
-      <div className="w-full max-w-7xl flex flex-col lg:flex-row relative z-10 px-4 sm:px-6 lg:px-8 h-full min-h-[600px] gap-12 py-12">
-        
-        {/* Left Side: Hero Text */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center animate-slide-in-right">
-          <div className="mb-10 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/60 dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-sm w-fit transform hover:scale-105 transition-transform duration-300">
-            {/* <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse-slow shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span> */}
-            {/* <span className="text-sm font-bold tracking-widest text-gray-800 dark:text-gray-200 uppercase">System Online v3.0</span> */}
+      <div className="w-full max-w-7xl flex flex-col lg:flex-row relative z-10 px-6 md:px-12 h-full min-h-[760px] gap-12 py-10 items-center">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center space-y-10">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-panel w-fit">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
+            <span className="text-xs font-semibold tracking-widest text-slate-700 dark:text-slate-200 uppercase">Clothiq Enterprise</span>
           </div>
-          
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 text-gray-900 dark:text-white leading-[1.1]">
-            Next-Gen <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-500 animate-gradient-x">
-              E-commerce.
-            </span>
-          </h1>
-          <p className="text-lg md:text-2xl text-gray-600 dark:text-gray-400 max-w-lg leading-relaxed font-medium">
-            Manage your digital empire with a sleek, ultra-fast, and deeply integrated experience designed for modern teams.
-          </p>
+
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.05]">
+              Build Better
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-slate-900 dark:to-slate-100">
+                Commerce Ops
+              </span>
+            </h1>
+
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed font-medium">
+              Unified command center for premium menswear operations, trusted by globally scaling retail teams.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+            <div className="flex gap-5 group cursor-default">
+              <div className="w-11 h-11 rounded-2xl glass-panel flex items-center justify-center text-blue-600">
+                <ShieldCheck size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-base">Enterprise Security</h4>
+                <p className="text-sm text-slate-500 mt-1">Zero-trust access and protected admin workflows.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-5 group cursor-default">
+              <div className="w-11 h-11 rounded-2xl glass-panel flex items-center justify-center text-blue-600">
+                <BarChart3 size={24} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-base">Real-Time Insights</h4>
+                <p className="text-sm text-slate-500 mt-1">Live sales, inventory and customer intelligence.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Side: Auth Form Container */}
         <div className="w-full lg:w-1/2 flex items-center justify-center lg:justify-end">
-          <div className="w-full max-w-md bg-white/70 dark:bg-black/40 backdrop-blur-2xl p-10 sm:p-12 rounded-[2.5rem] shadow-glass dark:shadow-glass-dark border border-white/50 dark:border-white/10 animate-fade-in-up hover:shadow-2xl transition-all duration-500 relative group">
-            {/* Subtle floating glow effect behind the card */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-pink-500 rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-1000 group-hover:duration-200 -z-10"></div>
+          <div className="w-full max-w-[480px] glass-panel p-8 sm:p-10 rounded-[2rem] relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-b-full" />
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-14 h-14 bg-gradient-to-tr from-[#0A0A0B] to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                <Hexagon size={32} strokeWidth={2.5} className="fill-white/20" />
+              </div>
+            </div>
             <Outlet />
           </div>
         </div>
-        
       </div>
     </div>
   );

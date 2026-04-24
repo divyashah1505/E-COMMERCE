@@ -10,6 +10,7 @@ import AppLayout from '../components/layout/AppLayout';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import TwoFactorPage from '../pages/auth/TwoFactorPage';
+import Setting from '../pages/auth/setting'; // 1. IMPORT THE SETTING COMPONENT
 
 // Admin Pages
 import DashboardPage from '../pages/dashboard/DashboardPage';
@@ -17,8 +18,8 @@ import CustomerList from '../pages/auth/customerList';
 import CategoryList from '../pages/auth/categoryList';
 import SubcategoryList from '../pages/auth/subcategoryList';
 import ProductList from '../pages/auth/productList'; 
-import PromoCodeList from '../pages/auth/promoCodeList'; // Added this import
-import SubscriptionList from '../pages/auth/suuScriptionList'; // Corrected import
+import PromoCodeList from '../pages/auth/promoCodeList'; 
+import SubscriptionList from '../pages/auth/suuScriptionList'; 
 
 export default function Routes() {
   return useRoutes([
@@ -60,17 +61,14 @@ export default function Routes() {
         {
           path: 'categories', 
           children: [
-            // List all Categories: /categories
             {
               path: '', 
               element: <CategoryList />,
             },
-            // List Subcategories of a Category: /categories/:categoryId/subcategories
             {
               path: ':categoryId/subcategories', 
               element: <SubcategoryList />,
             },
-            // List Products of a Subcategory: /categories/:categoryId/subcategories/:subcategoryId/products
             {
               path: ':categoryId/subcategories/:subcategoryId/products',
               element: <ProductList />,
@@ -78,7 +76,7 @@ export default function Routes() {
           ],
         },
 
-        // --- Global Product Management (Optional direct access) ---
+        // --- Global Product Management ---
         {
           path: 'products',
           children: [
@@ -88,15 +86,22 @@ export default function Routes() {
 
         // --- Additional Modules ---
         { path: PATHS.ORDERS, element: <div className="p-8">Orders Registry</div> },
+        
+        // 2. REGISTER THE SETTINGS ROUTE HERE
+        { 
+          path: PATHS.SETTINGS, 
+          element: <Setting /> 
+        },
+
+        // (Optional) You can keep or remove the old payments path
         { path: PATHS.PAYMENTS, element: <div className="p-8">Payment Protocol</div> },
         
-        // --- Updated Promo Route ---
         { 
           path: PATHS.PROMO, 
           element: <PromoCodeList /> 
         }, 
-              { 
-          path: PATHS.SUBSCRIPTIONS, // Make sure PATHS.SUBSCRIPTIONS is defined
+        { 
+          path: PATHS.SUBSCRIPTIONS,
           element: <SubscriptionList /> 
         },
         

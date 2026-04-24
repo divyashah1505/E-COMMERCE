@@ -23,9 +23,10 @@ const RegisterPage = () => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
+        // Mocking API call for now as per original code
         setTimeout(() => {
-          toast.success('Ready for takeoff! 🚀', {
-            style: { borderRadius: '1rem', background: '#333', color: '#fff', fontWeight: 'bold' }
+          toast.success('Registration request sent.', {
+            style: { borderRadius: '8px', background: '#0F172A', color: '#fff' }
           });
           navigate('/login');
           setLoading(false);
@@ -39,74 +40,74 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-10 text-center sm:text-left">
-        <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight mb-3">Join the Squad</h2>
-        <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Create your admin account.</p>
+      <div className="mb-8">
+        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Create Account</h2>
+        <p className="text-slate-500 dark:text-slate-400">Join the administrative team.</p>
       </div>
       
-      <form onSubmit={formik.handleSubmit} className="space-y-5">
-        <div className="group">
-          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1 transition-colors group-focus-within:text-primary">Username</label>
+      <form onSubmit={formik.handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.12em] mb-2 ml-1">Username</label>
           <input
             type="text"
             name="username"
-            className={`input-genz text-lg ${formik.touched.username && formik.errors.username ? 'border-red-500' : ''}`}
+            className={`premium-input ${formik.touched.username && formik.errors.username ? 'border-rose-500' : ''}`}
             placeholder="johndoe"
             value={formik.values.username}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
           {formik.touched.username && formik.errors.username && (
-            <p className="text-red-500 text-sm mt-2 ml-1 font-bold animate-slide-in-right">{formik.errors.username}</p>
+            <p className="text-rose-500 text-xs mt-1 ml-1 font-bold">{formik.errors.username}</p>
           )}
         </div>
         
-        <div className="group">
-          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1 transition-colors group-focus-within:text-primary">Email</label>
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.12em] mb-2 ml-1">Email</label>
           <input
             type="email"
             name="email"
-            className={`input-genz text-lg ${formik.touched.email && formik.errors.email ? 'border-red-500' : ''}`}
-            placeholder="admin@startup.com"
+            className={`premium-input ${formik.touched.email && formik.errors.email ? 'border-rose-500' : ''}`}
+            placeholder="admin@clothiq.com"
             value={formik.values.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
           {formik.touched.email && formik.errors.email && (
-            <p className="text-red-500 text-sm mt-2 ml-1 font-bold animate-slide-in-right">{formik.errors.email}</p>
+            <p className="text-rose-500 text-xs mt-1 ml-1 font-bold">{formik.errors.email}</p>
           )}
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="group">
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1 transition-colors group-focus-within:text-primary">Password</label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.12em] mb-2 ml-1">Password</label>
             <input
               type="password"
               name="password"
-              className={`input-genz text-lg tracking-widest ${formik.touched.password && formik.errors.password ? 'border-red-500' : ''}`}
+              className={`premium-input ${formik.touched.password && formik.errors.password ? 'border-rose-500' : ''}`}
               placeholder="••••••••"
               value={formik.values.password}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
             {formik.touched.password && formik.errors.password && (
-              <p className="text-red-500 text-sm mt-2 ml-1 font-bold animate-slide-in-right">{formik.errors.password}</p>
+              <p className="text-rose-500 text-xs mt-1 ml-1 font-bold">{formik.errors.password}</p>
             )}
           </div>
           
-          <div className="group">
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1 transition-colors group-focus-within:text-primary">Confirm</label>
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-[0.12em] mb-2 ml-1">Confirm</label>
             <input
               type="password"
               name="confirmPassword"
-              className={`input-genz text-lg tracking-widest ${formik.touched.confirmPassword && formik.errors.confirmPassword ? 'border-red-500' : ''}`}
+              className={`premium-input ${formik.touched.confirmPassword && formik.errors.confirmPassword ? 'border-rose-500' : ''}`}
               placeholder="••••••••"
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
             {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-2 ml-1 font-bold animate-slide-in-right">{formik.errors.confirmPassword}</p>
+              <p className="text-rose-500 text-xs mt-1 ml-1 font-bold">{formik.errors.confirmPassword}</p>
             )}
           </div>
         </div>
@@ -115,19 +116,18 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full relative overflow-hidden bg-gradient-to-r from-primary via-purple-500 to-pink-500 text-white font-black text-lg py-4 px-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-neon disabled:opacity-50 group"
+            className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]"
           >
-            <span className="relative z-10">{loading ? 'Creating...' : 'Create Account'}</span>
-            <div className="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:animate-shine"></div>
+            {loading ? 'Processing...' : 'Create Account'}
           </button>
         </div>
       </form>
       
-      <div className="mt-10 text-center">
-        <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
-          Already part of the crew?{' '}
-          <Link to="/login" className="text-primary hover:text-pink-500 font-black transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-pink-500 hover:after:w-full after:transition-all after:duration-300">
-            Login
+      <div className="mt-8 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+          Already registered?{' '}
+          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+            Sign in
           </Link>
         </p>
       </div>

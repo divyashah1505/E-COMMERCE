@@ -118,15 +118,16 @@ const SubscriptionList = () => {
   };
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
+    <div className="premium-page">
+      <div className="premium-shell">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Subscription Plan</h1>
           <p className="text-slate-500 font-medium italic text-sm">Configure Membership Tiers & Benefit Slabs</p>
         </div>
-        <button 
+        <button
           onClick={() => openModal()}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:scale-105 transition-all"
+          className="premium-btn premium-btn-primary px-5 py-3"
         >
           <Plus size={20} /> Create New Plan
         </button>
@@ -137,7 +138,7 @@ const SubscriptionList = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <div key={plan._id} className="bg-white rounded-[32px] p-6 shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+            <div key={plan._id} className="premium-card p-6 hover:shadow-xl transition-all">
               <div className="flex justify-between items-center mb-6">
                 <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${plan.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                   {plan.is_active ? 'Active' : 'Inactive'}
@@ -177,8 +178,8 @@ const SubscriptionList = () => {
 
       {/* Modal for Add/Edit */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
-          <div className="bg-white rounded-[40px] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl">
+        <div className="premium-modal">
+          <div className="premium-modal-card max-w-4xl">
             <h2 className="text-2xl font-black text-slate-900 mb-8 uppercase tracking-tight">Configure Membership</h2>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -187,17 +188,17 @@ const SubscriptionList = () => {
                 <div className="bg-slate-50 p-6 rounded-[30px] space-y-4">
                   <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">Base Settings</p>
                   
-                  <input required placeholder="Plan Name" className="w-full px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                  <input required placeholder="Plan Name" className="premium-input"
                     value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <input type="number" placeholder="Price (₹)" className="px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                    <input type="number" placeholder="Price (₹)" className="premium-input"
                       value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
-                    <input type="number" placeholder="Months" className="px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                    <input type="number" placeholder="Months" className="premium-input"
                       value={formData.duration_months} onChange={(e) => setFormData({...formData, duration_months: e.target.value})} />
                   </div>
 
-                  <select className="w-full px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                  <select className="premium-input"
                     value={formData.plan_type} onChange={(e) => setFormData({...formData, plan_type: e.target.value})}>
                     <option value={1}>Type 1 (Silver)</option>
                     <option value={2}>Type 2 (Gold)</option>
@@ -208,9 +209,9 @@ const SubscriptionList = () => {
                 <div className="bg-slate-50 p-6 rounded-[30px] space-y-4">
                   <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">Offer Rules</p>
                   <div className="grid grid-cols-2 gap-4">
-                    <input type="number" placeholder="Discount %" className="px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                    <input type="number" placeholder="Discount %" className="premium-input"
                       value={formData.discount_percent} onChange={(e) => setFormData({...formData, discount_percent: e.target.value})} />
-                    <input type="number" placeholder="Max Limit (₹)" className="px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                    <input type="number" placeholder="Max Limit (₹)" className="premium-input"
                       value={formData.max_discount_limit} onChange={(e) => setFormData({...formData, max_discount_limit: e.target.value})} />
                   </div>
                   <div className="flex items-center gap-3 p-2">
@@ -228,7 +229,7 @@ const SubscriptionList = () => {
                   
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Welcome Points</label>
-                    <input type="number" className="w-full px-5 py-4 bg-white rounded-2xl font-bold border-none ring-1 ring-slate-200"
+                    <input type="number" className="premium-input"
                       value={formData.rewards.first_order_points} 
                       onChange={(e) => setFormData({...formData, rewards: {...formData.rewards, first_order_points: e.target.value}})} />
                   </div>
@@ -237,7 +238,7 @@ const SubscriptionList = () => {
                     {Object.keys(formData.rewards.slab).map((key) => (
                       <div key={key} className="space-y-1">
                         <label className="text-[9px] font-black text-indigo-400 uppercase ml-2">Slab {key}</label>
-                        <input type="number" placeholder="Points" className="w-full px-5 py-3 bg-white rounded-xl font-bold border-none ring-1 ring-slate-200 text-sm"
+                        <input type="number" placeholder="Points" className="premium-input text-sm"
                           value={formData.rewards.slab[key]} 
                           onChange={(e) => handleSlabChange(key, e.target.value)} />
                       </div>
@@ -247,7 +248,7 @@ const SubscriptionList = () => {
 
                 <div className="flex justify-end gap-4 pt-4">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 font-bold text-slate-400 hover:text-slate-600">Discard</button>
-                  <button type="submit" className="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+                  <button type="submit" className="premium-btn premium-btn-primary px-6 py-3 text-xs uppercase tracking-[0.14em]">
                     {editingPlan ? 'Update Plan' : 'Save Plan'}
                   </button>
                 </div>
@@ -256,6 +257,7 @@ const SubscriptionList = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

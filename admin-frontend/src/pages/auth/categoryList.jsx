@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
     Search, Plus, Edit3, Layers, Image as ImageIcon, 
     X, Upload, Power, LayoutGrid, 
-    CheckCircle2, AlertCircle, Eye, RefreshCw
+    CheckCircle2, AlertCircle, Eye
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
@@ -142,8 +142,8 @@ const CategoryList = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F4F7FA] text-[#1E293B] font-sans antialiased">
-            <div className="max-w-[1440px] mx-auto px-8 py-12 lg:px-16">
+        <div className="premium-page">
+            <div className="premium-shell">
                 
                 <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
                     <div className="space-y-4">
@@ -161,9 +161,9 @@ const CategoryList = () => {
                     
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-4 px-10 py-5 bg-[#0F172A] hover:bg-indigo-700 text-white rounded-3xl font-black text-sm transition-all duration-300 shadow-xl shadow-slate-300 active:scale-95"
+                        className="premium-btn premium-btn-primary px-6 py-3.5 uppercase tracking-[0.14em]"
                     >
-                        <Plus size={22} strokeWidth={3} />
+                        <Plus size={18} strokeWidth={3} />
                         Add New Category
                     </button>
                 </header>
@@ -175,7 +175,7 @@ const CategoryList = () => {
                     <input
                         type="text"
                         placeholder="Search system resources..."
-                        className="w-full pl-20 pr-10 py-6 bg-white border-2 border-slate-100 rounded-[32px] focus:ring-[12px] focus:ring-indigo-500/10 focus:border-indigo-600 outline-none shadow-xl shadow-slate-200/50 text-lg font-bold transition-all placeholder:text-slate-300"
+                        className="w-full pl-14 pr-6 py-3.5 bg-white/80 dark:bg-[#0f172a]/60 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none text-sm font-medium transition-all placeholder:text-slate-400"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -197,12 +197,12 @@ const CategoryList = () => {
                             </div>
                         ) : (
                             categories.map((category) => (
-                                <div 
+                                <div
                                     key={category._id} 
-                                    className={`group grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-8 bg-white border border-slate-200/50 rounded-[40px] shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-200 transition-all duration-500 relative ${category.status === 0 ? 'opacity-75 grayscale-[0.5]' : ''}`}
+                                    className={`group grid grid-cols-1 md:grid-cols-12 gap-6 items-center p-6 premium-card ${category.status === 0 ? 'opacity-75 grayscale-[0.4]' : ''}`}
                                 >
                                     <div className="col-span-5 flex items-center gap-8">
-                                        <div className="h-28 w-28 rounded-[36px] bg-slate-50 flex items-center justify-center overflow-hidden border-2 border-slate-100 group-hover:border-indigo-300 transition-all shadow-inner">
+                                        <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 transition-all">
                                             {category.image ? (
                                                 <img 
                                                     src={`${IMAGE_BASE_URL}/${category.image}`} 
@@ -214,17 +214,17 @@ const CategoryList = () => {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="text-2xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
+                                            <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
                                                 {category.name}
                                             </h3>
-                                            <p className="text-sm font-bold text-slate-500 mt-2 line-clamp-2 leading-relaxed italic opacity-80">
+                                            <p className="text-sm font-medium text-slate-500 dark:text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
                                                 {category.description || 'Metadata description not provided.'}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="col-span-2 flex justify-center">
-                                        <div className="inline-flex items-center gap-2.5 px-6 py-3 bg-slate-100 text-slate-800 rounded-2xl font-black text-[12px] group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 rounded-xl font-semibold text-xs">
                                             <Layers size={16} strokeWidth={3} />
                                             {category.subcategories?.length || 0} Sub-Category
                                         </div>
@@ -232,12 +232,12 @@ const CategoryList = () => {
 
                                     <div className="col-span-2 flex justify-center">
                                         {category.status === 1 ? (
-                                            <div className="flex items-center gap-3 px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-full font-black text-[10px] uppercase tracking-widest border-2 border-emerald-100 shadow-sm">
+                                            <div className="status-pill bg-emerald-50 text-emerald-700 border-emerald-100">
                                                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                                                 Active
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-3 px-5 py-2.5 bg-rose-50 text-rose-600 rounded-full font-black text-[10px] uppercase tracking-widest border-2 border-rose-100 shadow-sm">
+                                            <div className="status-pill bg-rose-50 text-rose-600 border-rose-100">
                                                 <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                                                 Deactivated
                                             </div>
@@ -253,9 +253,9 @@ const CategoryList = () => {
                                                 <ActionIcon onClick={() => handleToggleStatus(category)} icon={<Power size={20} />} label="Deactivate" theme="rose" />
                                             </>
                                         ) : (
-                                            <button 
+                                            <button
                                                 onClick={() => handleToggleStatus(category)}
-                                                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-indigo-100"
+                                                className="premium-btn premium-btn-primary px-5 py-2.5 text-xs uppercase tracking-[0.14em]"
                                             >
                                                 Activate
                                             </button>
@@ -266,7 +266,7 @@ const CategoryList = () => {
                         )}
 
                         {!loading && categories.length === 0 && (
-                            <div className="py-40 bg-white rounded-[48px] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center">
+                            <div className="py-28 premium-card border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center">
                                 <div className="p-8 bg-slate-50 rounded-full text-slate-300 mb-6">
                                     <AlertCircle size={64} strokeWidth={1} />
                                 </div>
@@ -279,9 +279,9 @@ const CategoryList = () => {
             </div>
 
             {(isModalOpen || isSubcategoryModalOpen) && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="relative w-full max-w-2xl bg-white rounded-[56px] shadow-2xl overflow-hidden border-8 border-white">
-                        <div className="flex items-center justify-between p-12 border-b border-slate-100">
+                <div className="premium-modal">
+                    <div className="premium-modal-card max-w-2xl">
+                        <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/10">
                             <div>
                                 <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
                                     {isSubcategoryModalOpen ? 'Initialize Sub-Node' : editingCategory ? 'Modify Protocol' : 'New Master Entity'}
@@ -290,19 +290,19 @@ const CategoryList = () => {
                                     <CheckCircle2 size={14} /> {isSubcategoryModalOpen ? 'NESTED CONFIGURATION' : 'SECURE ENTRY MODE'}
                                 </p>
                             </div>
-                            <button onClick={handleCloseModal} className="p-4 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-500 rounded-3xl transition-all duration-300">
+                            <button onClick={handleCloseModal} className="p-3 bg-slate-100 dark:bg-white/10 hover:bg-rose-500 hover:text-white text-slate-500 rounded-2xl transition-all duration-300">
                                 <X size={28} strokeWidth={3} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-12 space-y-10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <form onSubmit={handleSubmit} className="pt-6 space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-8">
                                     <div className="group">
                                         <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Protocol Identity</label>
                                         <input
                                             type="text"
-                                            className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 focus:border-indigo-600 rounded-3xl outline-none font-bold text-slate-900 transition-all shadow-inner placeholder:text-slate-300"
+                                            className="premium-input"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="e.g. CORE ELECTRONICS"
@@ -313,7 +313,7 @@ const CategoryList = () => {
                                         <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Contextual Description</label>
                                         <textarea
                                             rows="4"
-                                            className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 focus:border-indigo-600 rounded-3xl outline-none font-bold text-slate-900 transition-all shadow-inner resize-none placeholder:text-slate-300"
+                                            className="premium-input min-h-28 resize-none"
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
                                             placeholder="Provide node purpose..."
@@ -326,7 +326,7 @@ const CategoryList = () => {
                                     <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Visual Asset Node</label>
                                     <div
                                         onClick={() => fileInputRef.current.click()}
-                                        className="flex-1 relative group bg-slate-50 border-4 border-dashed border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 rounded-[48px] cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500"
+                                        className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-48"
                                     >
                                         {previewUrl ? (
                                             <img src={previewUrl} className="h-full w-full object-cover" alt="Preview" />
@@ -346,7 +346,7 @@ const CategoryList = () => {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full h-24 bg-[#0F172A] hover:bg-indigo-600 text-white rounded-[36px] font-black text-sm uppercase tracking-[0.4em] transition-all duration-500 shadow-2xl active:scale-95 disabled:opacity-50"
+                                className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]"
                             >
                                 {submitting 
                                     ? 'COMMITTING DATA...' 

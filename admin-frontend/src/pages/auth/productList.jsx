@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { 
-    Search, Plus, Edit3, Image as ImageIcon, 
-    Power, ArrowLeft, AlertCircle, ShoppingBag, 
-    DollarSign, Package, LayoutGrid, X, Upload, RefreshCw, CheckCircle2
+    Search, Edit3, Image as ImageIcon, 
+    Power, ArrowLeft, AlertCircle, 
+    DollarSign, LayoutGrid, X, Upload, CheckCircle2
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
@@ -149,12 +149,12 @@ const ProductList = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F4F7FA] text-[#1E293B] font-sans antialiased">
-            <div className="max-w-[1440px] mx-auto px-8 py-12 lg:px-16">
+        <div className="premium-page">
+            <div className="premium-shell">
                 
                 <button 
                     onClick={() => navigate(PATHS.SUBCATEGORIES.replace(':categoryId', categoryId))}
-                    className="group flex items-center gap-3 mb-10 text-slate-500 hover:text-indigo-600 transition-all font-black text-xs uppercase tracking-[0.2em]"
+                    className="group flex items-center gap-3 mb-8 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-xs uppercase tracking-[0.14em]"
                 >
                     <div className="p-3 bg-white border-2 border-slate-100 rounded-2xl group-hover:border-indigo-200 group-hover:bg-indigo-50 shadow-sm transition-all">
                         <ArrowLeft size={18} strokeWidth={3} />
@@ -184,7 +184,7 @@ const ProductList = () => {
                     <input
                         type="text"
                         placeholder={`Search within ${subName}...`}
-                        className="w-full pl-20 pr-10 py-6 bg-white border-2 border-slate-100 rounded-[32px] focus:ring-[12px] focus:ring-indigo-500/10 focus:border-indigo-600 outline-none shadow-xl shadow-slate-200/50 text-lg font-bold transition-all placeholder:text-slate-300"
+                        className="w-full pl-14 pr-6 py-3.5 bg-white/80 dark:bg-[#0f172a]/60 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none text-sm font-medium transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -205,12 +205,12 @@ const ProductList = () => {
                         </div>
                     ) : filteredProducts.length > 0 ? (
                         filteredProducts.map((product) => (
-                            <div 
+                            <div
                                 key={product._id} 
-                                className={`group grid grid-cols-12 gap-8 items-center p-8 bg-white border border-slate-200/50 rounded-[40px] shadow-sm hover:shadow-2xl transition-all duration-500 relative ${product.status === 0 ? 'opacity-75 grayscale-[0.5]' : ''}`}
+                                className={`group grid grid-cols-12 gap-6 items-center p-6 premium-card ${product.status === 0 ? 'opacity-75 grayscale-[0.4]' : ''}`}
                             >
                                 <div className="col-span-5 flex items-center gap-8">
-                                    <div className="h-28 w-28 rounded-[36px] bg-slate-50 flex items-center justify-center overflow-hidden border-2 border-slate-100 transition-all shadow-inner">
+                                    <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 transition-all">
                                         {product.image ? (
                                             <img src={`${IMAGE_BASE_URL}/${product.image}`} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                         ) : (
@@ -218,17 +218,17 @@ const ProductList = () => {
                                         )}
                                     </div>
                                     <div className="min-w-0">
-                                        <h3 className="text-2xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight line-clamp-1">
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors uppercase tracking-tight line-clamp-1">
                                             {product.name}
                                         </h3>
-                                        <p className="text-sm font-bold text-slate-500 mt-2 line-clamp-1 italic opacity-80 leading-relaxed">
+                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-300 mt-1.5 line-clamp-1 leading-relaxed">
                                             {product.description || 'No contextual description provided.'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="col-span-2 flex justify-center">
-                                    <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-2xl font-black text-[14px] border-2 border-emerald-100 shadow-sm">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm border border-emerald-100">
                                         <DollarSign size={14} strokeWidth={3} />
                                         {product.price?.toLocaleString()}
                                     </div>
@@ -236,12 +236,12 @@ const ProductList = () => {
 
                                 <div className="col-span-2 flex justify-center">
                                     {product.status === 1 ? (
-                                        <div className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-700 rounded-full font-black text-[10px] uppercase tracking-widest border-2 border-blue-100 shadow-sm">
+                                        <div className="status-pill bg-blue-50 text-blue-700 border-blue-100">
                                             <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
                                             {product.qty} UNITS
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-3 px-5 py-2.5 bg-rose-50 text-rose-600 rounded-full font-black text-[10px] uppercase tracking-widest border-2 border-rose-100 shadow-sm">
+                                        <div className="status-pill bg-rose-50 text-rose-600 border-rose-100">
                                             <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                                             Deactivated
                                         </div>
@@ -255,9 +255,9 @@ const ProductList = () => {
                                             <ActionIcon onClick={() => handleToggleStatus(product)} icon={<Power size={20} />} label="Deactivate" theme="rose" />
                                         </>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={() => handleToggleStatus(product)}
-                                            className="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-indigo-200"
+                                            className="premium-btn premium-btn-primary px-5 py-2.5 text-xs uppercase tracking-[0.14em]"
                                         >
                                             Activate
                                         </button>
@@ -266,7 +266,7 @@ const ProductList = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="py-40 bg-white rounded-[48px] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center">
+                        <div className="py-28 premium-card border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center">
                             <AlertCircle size={64} className="text-slate-200 mb-4" />
                             <h3 className="text-3xl font-black text-slate-900">Inventory Void</h3>
                             <p className="text-slate-400 font-bold uppercase text-xs">No assets detected in this node.</p>
@@ -277,9 +277,9 @@ const ProductList = () => {
 
             {/* Edit Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="relative w-full max-w-4xl bg-white rounded-[56px] shadow-2xl overflow-hidden border-8 border-white">
-                        <div className="flex items-center justify-between p-12 border-b border-slate-100">
+                <div className="premium-modal">
+                    <div className="premium-modal-card max-w-4xl">
+                        <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/10">
                             <div>
                                 <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Modify Product</h2>
                                 <p className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.3em] mt-3 flex items-center gap-2">
@@ -291,32 +291,32 @@ const ProductList = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-12 space-y-10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <form onSubmit={handleSubmit} className="pt-6 space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div className="group">
                                         <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Identify</label>
-                                        <input type="text" className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl outline-none font-bold" value={name} onChange={(e) => setName(e.target.value)} required />
+                                        <input type="text" className="premium-input" value={name} onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                     <div>
                                         <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Description</label>
-                                        <textarea rows="3" className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl outline-none font-bold resize-none" value={description} onChange={(e) => setDescription(e.target.value)} required />
+                                        <textarea rows="3" className="premium-input min-h-24 resize-none" value={description} onChange={(e) => setDescription(e.target.value)} required />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Price ($)</label>
-                                            <input type="number" min="0" className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl outline-none font-bold" value={price} onChange={(e) => setPrice(e.target.value)} required />
+                                            <input type="number" min="0" className="premium-input" value={price} onChange={(e) => setPrice(e.target.value)} required />
                                         </div>
                                         <div>
                                             <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Stock</label>
-                                            <input type="number" min="0" className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl outline-none font-bold" value={qty} onChange={(e) => setQty(e.target.value)} required />
+                                            <input type="number" min="0" className="premium-input" value={qty} onChange={(e) => setQty(e.target.value)} required />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col">
                                     <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Visual Node</label>
-                                    <div onClick={() => fileInputRef.current.click()} className="flex-1 relative group bg-slate-50 border-4 border-dashed border-slate-200 hover:border-indigo-500 rounded-[48px] cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500">
+                                    <div onClick={() => fileInputRef.current.click()} className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-60">
                                         {previewUrl ? (
                                             <img src={previewUrl} className="h-full w-full object-cover" alt="Preview" />
                                         ) : (
@@ -330,7 +330,7 @@ const ProductList = () => {
                                 </div>
                             </div>
 
-                            <button type="submit" disabled={submitting} className="w-full h-24 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[36px] font-black text-sm uppercase tracking-[0.4em] transition-all shadow-xl active:scale-95 disabled:opacity-50">
+                            <button type="submit" disabled={submitting} className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]">
                                 {submitting ? 'COMMITTING...' : 'UPDATE SYSTEM ASSET'}
                             </button>
                         </form>
