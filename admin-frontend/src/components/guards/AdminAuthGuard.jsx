@@ -8,13 +8,13 @@ const AdminAuthGuard = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const token = getToken();
 
-  // ❌ no token → force login
+  // 1. No token → redirect immediately
   if (!token) {
     return <Navigate to={PATHS.LOGIN} state={{ from: location }} replace />;
   }
 
-  // ⏳ token exists but redux not ready yet → wait (IMPORTANT)
-  if (token && !isAuthenticated) {
+  // 2. Token exists but Redux not ready → WAIT (prevents flicker redirect)
+  if (!isAuthenticated && token) {
     return (
       <div className="flex items-center justify-center h-screen">
         Loading session...
