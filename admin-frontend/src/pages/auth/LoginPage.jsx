@@ -39,22 +39,19 @@ const LoginPage = () => {
             email: payload.email,
           };
           
-     if (token) {
+if (token) {
   setToken(token);
+
+  dispatch(setCredentials({
+    admin: adminData,
+    token,
+  }));
+
+  // wait 1 tick before navigation (IMPORTANT FIX)
+  setTimeout(() => {
+    navigate('/dashboard', { replace: true });
+  }, 50);
 }
-
-if (payload.refreshToken) {
-  localStorage.setItem(
-    'admin_refresh_token',
-    payload.refreshToken
-  );
-}
-
-dispatch(setCredentials({
-  admin: adminData,
-  token,
-}));
-
 toast.success('Access Granted. Welcome.', {
   style: {
     borderRadius: '12px',
