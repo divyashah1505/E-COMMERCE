@@ -9,7 +9,7 @@ import { PATHS } from "../../routes/routePaths";
 import { categoryService } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
-const IMAGE_BASE_URL = "http://localhost:3000/uploads/IMG";
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL 
 
 const CategoryList = () => {
     const navigate = useNavigate();
