@@ -20,6 +20,13 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // When sending FormData (file uploads), remove the default JSON
+    // Content-Type so axios can auto-set multipart/form-data with
+    // the correct boundary string.
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
