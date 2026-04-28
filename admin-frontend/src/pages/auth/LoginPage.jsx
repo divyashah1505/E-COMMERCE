@@ -49,29 +49,16 @@ const LoginPage = () => {
           return;
         }
 
-        const token = payload.accessToken || payload.token;
-
+        // Extract token safely
+        const token = payload.accessToken || payload.token || payload?.data?.accessToken || payload?.data?.token;
+        console.log('Login successful, token:', token);
         if (!token) {
           toast.error('Token not received from server');
           return;
         }
-
-        const adminData = {
-          username: payload.username,
-          email: payload.email,
-        };
-
-        // -------------------------
-        // STORE AUTH DATA
-        // -------------------------
+        // Store token and update Redux
         setToken(token);
-
-        dispatch(
-          setCredentials({
-            admin: adminData,
-            token,
-          })
-        );
+        dispatch(setCredentials({ admin: adminData, token }));
 
         toast.success('Access Granted. Welcome.', {
           style: {
