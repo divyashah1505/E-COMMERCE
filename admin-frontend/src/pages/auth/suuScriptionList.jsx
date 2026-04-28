@@ -120,143 +120,143 @@ const SubscriptionList = () => {
   return (
     <div className="premium-page">
       <div className="premium-shell">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Subscription Plan</h1>
-          <p className="text-slate-500 font-medium italic text-sm">Configure Membership Tiers & Benefit Slabs</p>
-        </div>
-        <button
-          onClick={() => openModal()}
-          className="premium-btn premium-btn-primary px-5 py-3"
-        >
-          <Plus size={20} /> Create New Plan
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center p-20"><Loader2 className="animate-spin text-indigo-600" size={40} /></div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div key={plan._id} className="premium-card p-6 hover:shadow-xl transition-all">
-              <div className="flex justify-between items-center mb-6">
-                <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${plan.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                  {plan.is_active ? 'Active' : 'Inactive'}
-                </span>
-                <div className="flex gap-2">
-                  <button onClick={() => openModal(plan)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"><Edit2 size={18}/></button>
-                  <button onClick={() => handleToggleStatus(plan)} className={`p-2 rounded-xl transition-all ${plan.is_active ? 'text-rose-400 hover:bg-rose-50' : 'text-emerald-400 hover:bg-emerald-50'}`}>
-                    {plan.is_active ? <XCircle size={18}/> : <CheckCircle size={18}/>}
-                  </button>
-                </div>
-              </div>
-
-              <h2 className="text-xl font-black text-slate-900 mb-1">{plan.name}</h2>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-3xl font-black text-indigo-600">₹{plan.price}</span>
-                <span className="text-slate-400 font-bold text-xs">/ {plan.duration_months} Months</span>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                  <Percent size={16} className="text-indigo-500" />
-                  <span>{plan.discount_percent}% off up to ₹{plan.max_discount_limit}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                  <Truck size={16} className="text-indigo-500" />
-                  <span>Free delivery {plan.free_delivery ? `> ₹${plan.free_delivery_min_amount}` : 'Disabled'}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                  <Award size={16} className="text-indigo-500" />
-                  <span>{plan.rewards?.first_order_points} Welcome Points</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Modal for Add/Edit */}
-      {isModalOpen && (
-        <div className="premium-modal">
-          <div className="premium-modal-card max-w-4xl">
-            <h2 className="text-2xl font-black text-slate-900 mb-8 uppercase tracking-tight">Configure Membership</h2>
-            
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column: Basic Info */}
-              <div className="space-y-6">
-                <div className="bg-slate-50 p-6 rounded-[30px] space-y-4">
-                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">Base Settings</p>
-                  
-                  <input required placeholder="Plan Name" className="premium-input"
-                    value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="number" placeholder="Price (₹)" className="premium-input"
-                      value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
-                    <input type="number" placeholder="Months" className="premium-input"
-                      value={formData.duration_months} onChange={(e) => setFormData({...formData, duration_months: e.target.value})} />
-                  </div>
-
-                  <select className="premium-input"
-                    value={formData.plan_type} onChange={(e) => setFormData({...formData, plan_type: e.target.value})}>
-                    <option value={1}>Type 1 (Silver)</option>
-                    <option value={2}>Type 2 (Gold)</option>
-                    <option value={3}>Type 3 (Platinum)</option>
-                  </select>
-                </div>
-
-                <div className="bg-slate-50 p-6 rounded-[30px] space-y-4">
-                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">Offer Rules</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="number" placeholder="Discount %" className="premium-input"
-                      value={formData.discount_percent} onChange={(e) => setFormData({...formData, discount_percent: e.target.value})} />
-                    <input type="number" placeholder="Max Limit (₹)" className="premium-input"
-                      value={formData.max_discount_limit} onChange={(e) => setFormData({...formData, max_discount_limit: e.target.value})} />
-                  </div>
-                  <div className="flex items-center gap-3 p-2">
-                    <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={formData.free_delivery === 1} 
-                      onChange={(e) => setFormData({...formData, free_delivery: e.target.checked ? 1 : 0})} />
-                    <span className="font-bold text-sm text-slate-600">Free Delivery</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Rewards & Slabs */}
-              <div className="space-y-6">
-                <div className="bg-indigo-50 p-6 rounded-[30px] space-y-4 border border-indigo-100">
-                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">Points & Slabs</p>
-                  
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Welcome Points</label>
-                    <input type="number" className="premium-input"
-                      value={formData.rewards.first_order_points} 
-                      onChange={(e) => setFormData({...formData, rewards: {...formData.rewards, first_order_points: e.target.value}})} />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {Object.keys(formData.rewards.slab).map((key) => (
-                      <div key={key} className="space-y-1">
-                        <label className="text-[9px] font-black text-indigo-400 uppercase ml-2">Slab {key}</label>
-                        <input type="number" placeholder="Points" className="premium-input text-sm"
-                          value={formData.rewards.slab[key]} 
-                          onChange={(e) => handleSlabChange(key, e.target.value)} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-4 pt-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 font-bold text-slate-400 hover:text-slate-600">Discard</button>
-                  <button type="submit" className="premium-btn premium-btn-primary px-6 py-3 text-xs uppercase tracking-[0.14em]">
-                    {editingPlan ? 'Update Plan' : 'Save Plan'}
-                  </button>
-                </div>
-              </div>
-            </form>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="premium-page-title text-slate-900 dark:text-slate-100">Subscription Plans</h1>
+            <p className="premium-body-text text-slate-500 dark:text-slate-300">Configure membership tiers and benefit slabs.</p>
           </div>
+          <button
+            onClick={() => openModal()}
+            className="premium-btn premium-btn-primary px-5 py-3"
+          >
+            <Plus size={20} /> Create New Plan
+          </button>
         </div>
-      )}
+
+        {loading ? (
+          <div className="flex justify-center p-20"><Loader2 className="animate-spin text-indigo-600" size={40} /></div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {plans.map((plan) => (
+              <div key={plan._id} className="premium-card p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <span className={`status-pill ${plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+                    {plan.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                  <div className="flex gap-2">
+                    <button onClick={() => openModal(plan)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors"><Edit2 size={16} /></button>
+                    <button onClick={() => handleToggleStatus(plan)} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border transition-colors ${plan.is_active ? 'border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10' : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}>
+                      {plan.is_active ? <XCircle size={16} /> : <CheckCircle size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">{plan.name}</h2>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-2xl font-semibold text-indigo-600">₹{plan.price}</span>
+                  <span className="text-slate-500 dark:text-slate-400 text-xs">/ {plan.duration_months} months</span>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <Percent size={16} className="text-indigo-500" />
+                    <span>{plan.discount_percent}% off up to ₹{plan.max_discount_limit}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <Truck size={16} className="text-indigo-500" />
+                    <span>Free delivery {plan.free_delivery ? `> ₹${plan.free_delivery_min_amount}` : 'Disabled'}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <Award size={16} className="text-indigo-500" />
+                    <span>{plan.rewards?.first_order_points} Welcome Points</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Modal for Add/Edit */}
+        {isModalOpen && (
+          <div className="premium-modal">
+            <div className="premium-modal-card max-w-4xl">
+              <h2 className="text-2xl font-black text-slate-900 mb-8 uppercase tracking-tight">Configure Membership</h2>
+
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left Column: Basic Info */}
+                <div className="space-y-6">
+                  <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Base settings</p>
+
+                    <input required placeholder="Plan Name" className="premium-input"
+                      value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <input type="number" placeholder="Price (₹)" className="premium-input"
+                        value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+                      <input type="number" placeholder="Months" className="premium-input"
+                        value={formData.duration_months} onChange={(e) => setFormData({ ...formData, duration_months: e.target.value })} />
+                    </div>
+
+                    <select className="premium-input"
+                      value={formData.plan_type} onChange={(e) => setFormData({ ...formData, plan_type: e.target.value })}>
+                      <option value={1}>Type 1 (Silver)</option>
+                      <option value={2}>Type 2 (Gold)</option>
+                      <option value={3}>Type 3 (Platinum)</option>
+                    </select>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Offer rules</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <input type="number" placeholder="Discount %" className="premium-input"
+                        value={formData.discount_percent} onChange={(e) => setFormData({ ...formData, discount_percent: e.target.value })} />
+                      <input type="number" placeholder="Max Limit (₹)" className="premium-input"
+                        value={formData.max_discount_limit} onChange={(e) => setFormData({ ...formData, max_discount_limit: e.target.value })} />
+                    </div>
+                    <div className="flex items-center gap-3 p-2">
+                      <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={formData.free_delivery === 1}
+                        onChange={(e) => setFormData({ ...formData, free_delivery: e.target.checked ? 1 : 0 })} />
+                      <span className="font-medium text-sm text-slate-600 dark:text-slate-300">Free Delivery</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Rewards & Slabs */}
+                <div className="space-y-6">
+                  <div className="bg-indigo-50/40 dark:bg-indigo-500/10 p-6 rounded-xl space-y-4 border border-indigo-100 dark:border-indigo-500/20">
+                    <p className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Points & slabs</p>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Welcome Points</label>
+                      <input type="number" className="premium-input"
+                        value={formData.rewards.first_order_points}
+                        onChange={(e) => setFormData({ ...formData, rewards: { ...formData.rewards, first_order_points: e.target.value } })} />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.keys(formData.rewards.slab).map((key) => (
+                        <div key={key} className="space-y-1">
+                          <label className="text-[9px] font-black text-indigo-400 uppercase ml-2">Slab {key}</label>
+                          <input type="number" placeholder="Points" className="premium-input text-sm"
+                            value={formData.rewards.slab[key]}
+                            onChange={(e) => handleSlabChange(key, e.target.value)} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-4 pt-4">
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 font-bold text-slate-400 hover:text-slate-600">Discard</button>
+                    <button type="submit" className="premium-btn premium-btn-primary px-6 py-3 text-xs uppercase tracking-[0.14em]">
+                      {editingPlan ? 'Update Plan' : 'Save Plan'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ const AppLayout = () => {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen overflow-hidden font-sans bg-slate-100/70 dark:bg-[#07090f]">
+    <div className="flex h-screen overflow-hidden font-sans bg-[#F8FAFC] dark:bg-slate-950 transition-colors">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />

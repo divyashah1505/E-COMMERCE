@@ -85,8 +85,8 @@ const CustomerList = () => {
                 {/* Header */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">Customers</h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-300">Manage user identities and system access.</p>
+                        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white mb-1">Customers</h1>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Manage user identities and system access.</p>
                     </div>
                 </header>
 
@@ -109,29 +109,29 @@ const CustomerList = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-slate-100 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.03]">
-                                    <th className="px-6 py-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Id</th>
-                                    <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">userName</th>
-                                    <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Email</th>
-                                    <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400"> Status</th>
-                                    <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Security</th>
-                                    <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Control</th>
+                                <tr className="premium-table-head">
+                                    <th className="px-6 py-4">Id</th>
+                                    <th className="px-6 py-4">User Name</th>
+                                    <th className="px-6 py-4">Email</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4 text-center">Security</th>
+                                    <th className="px-6 py-4 text-right">Control</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {filteredUsers.length > 0 ? (
                                     filteredUsers.map((user, index) => (
                                         <tr key={user._id} className="group hover:bg-slate-50/30 transition-colors">
-                                            <td className="px-6 py-6 text-xs font-bold text-slate-300">
+                                            <td className="px-6 py-6 text-sm font-semibold text-slate-400">
                                                 {String(index + 1).padStart(2, '0')}
                                             </td>
 
                                             <td className="px-6 py-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                                                    <div className="h-10 w-10 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-xs">
                                                         {getInitials(user.userName)}
                                                     </div>
-                                                    <div className="font-bold text-slate-900 text-sm">{user.userName}</div>
+                                                    <div className="font-semibold text-slate-800 text-sm">{user.userName}</div>
                                                 </div>
                                             </td>
 
@@ -144,8 +144,8 @@ const CustomerList = () => {
 
                                             <td className="px-6 py-6">
                                                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-wider ${user.status === 1
-                                                        ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                                        : "bg-rose-50 text-rose-600 border-rose-100"
+                                                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                    : "bg-rose-50 text-rose-600 border-rose-100"
                                                     }`}>
                                                     <span className={`h-1.5 w-1.5 rounded-full ${user.status === 1 ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
                                                     {user.status === 1 ? "Active" : "Deactivated"}
@@ -162,9 +162,9 @@ const CustomerList = () => {
                                             <td className="px-6 py-6 text-right">
                                                 <button
                                                     onClick={() => handleStatusToggle(user._id, user.status)}
-                                                    className={`px-4 py-2 rounded-xl text-[10px] font-semibold uppercase tracking-[0.14em] border transition-all ${user.status === 1
-                                                            ? "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white"
-                                                            : "bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                                                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${user.status === 1
+                                                        ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
+                                                        : "bg-violet-500 text-white hover:bg-violet-600 shadow-sm"
                                                         }`}
                                                 >
                                                     {user.status === 1 ? "Deactivate" : "Activate"}

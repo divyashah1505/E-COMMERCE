@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { 
-    Search, Edit3, Image as ImageIcon, 
-    Power, ArrowLeft, AlertCircle, 
+import {
+    Search, Edit3, Image as ImageIcon,
+    Power, ArrowLeft, AlertCircle,
     DollarSign, LayoutGrid, X, Upload, CheckCircle2
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -40,14 +40,14 @@ const ProductList = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const res = await productService.getProductList(); 
+            const res = await productService.getProductList();
             const productsArray = res.data || [];
             setAllProducts(productsArray);
 
-            const firstMatch = productsArray.find(p => 
+            const firstMatch = productsArray.find(p =>
                 p.subcategory && String(p.subcategory._id) === String(subcategoryId)
             );
-            
+
             if (firstMatch) {
                 setSubName(firstMatch.subcategory.name);
             } else {
@@ -72,7 +72,7 @@ const ProductList = () => {
         return allProducts.filter(product => {
             const matchesSub = product.subcategory && String(product.subcategory._id) === String(subcategoryId);
             const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                 (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
+                (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
             return matchesSub && matchesSearch;
         });
     }, [allProducts, subcategoryId, searchTerm]);
@@ -109,7 +109,7 @@ const ProductList = () => {
         const file = e.target.files[0];
         if (file) {
             setSelectedFile(file);
-            setPreviewUrl(URL.createObjectURL(file)); 
+            setPreviewUrl(URL.createObjectURL(file));
         }
     };
 
@@ -151,8 +151,8 @@ const ProductList = () => {
     return (
         <div className="premium-page">
             <div className="premium-shell">
-                
-                <button 
+
+                <button
                     onClick={() => navigate(PATHS.SUBCATEGORIES.replace(':categoryId', categoryId))}
                     className="group flex items-center gap-3 mb-8 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-xs uppercase tracking-[0.14em]"
                 >
@@ -162,17 +162,17 @@ const ProductList = () => {
                     Return to Sub-Category
                 </button>
 
-                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
+                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
                     <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-600 text-white rounded-full text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-indigo-200">
-                            <LayoutGrid size={12} strokeWidth={3} />
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300">
+                            <LayoutGrid size={12} strokeWidth={2.5} />
                             {subName} Cluster
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight">
-                            Product <span className="text-indigo-600/80 font-bold">Panel</span>
+                        <h1 className="premium-page-title text-slate-900 dark:text-slate-100">
+                            Products
                         </h1>
-                        <p className="text-slate-600 font-semibold max-w-xl text-lg leading-relaxed italic opacity-80">
-                            Managing Products for subCategory: <span className="text-indigo-600 not-italic font-black uppercase">{subName}</span>
+                        <p className="premium-body-text text-slate-600 dark:text-slate-300 max-w-xl">
+                            Managing products for subcategory: <span className="text-indigo-600 font-semibold">{subName}</span>
                         </p>
                     </div>
                 </header>
@@ -190,7 +190,7 @@ const ProductList = () => {
                     />
                 </div>
 
-                <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">
+                <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 premium-table-head">
                     <div className="col-span-5">Product Details</div>
                     <div className="col-span-2 text-center">Unit Price</div>
                     <div className="col-span-2 text-center">Status / Qty</div>
@@ -206,7 +206,7 @@ const ProductList = () => {
                     ) : filteredProducts.length > 0 ? (
                         filteredProducts.map((product) => (
                             <div
-                                key={product._id} 
+                                key={product._id}
                                 className={`group grid grid-cols-12 gap-6 items-center p-6 premium-card ${product.status === 0 ? 'opacity-75 grayscale-[0.4]' : ''}`}
                             >
                                 <div className="col-span-5 flex items-center gap-8">
@@ -251,8 +251,8 @@ const ProductList = () => {
                                 <div className="col-span-3 flex items-center justify-end gap-3">
                                     {product.status === 1 ? (
                                         <>
-                                            <ActionIcon onClick={() => handleEditProduct(product)} icon={<Edit3 size={20} />} label="Modify" theme="emerald" />
-                                            <ActionIcon onClick={() => handleToggleStatus(product)} icon={<Power size={20} />} label="Deactivate" theme="rose" />
+                                            <ActionIcon onClick={() => handleEditProduct(product)} icon={<Edit3 size={16} />} label="Modify" theme="emerald" />
+                                            <ActionIcon onClick={() => handleToggleStatus(product)} icon={<Power size={16} />} label="Deactivate" theme="rose" />
                                         </>
                                     ) : (
                                         <button
@@ -281,8 +281,8 @@ const ProductList = () => {
                     <div className="premium-modal-card max-w-4xl">
                         <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/10">
                             <div>
-                                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Modify Product</h2>
-                                <p className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.3em] mt-3 flex items-center gap-2">
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Modify Product</h2>
+                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2">
                                     <CheckCircle2 size={14} /> SECURE UPDATE MODE
                                 </p>
                             </div>
@@ -295,20 +295,20 @@ const ProductList = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div className="group">
-                                        <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Identify</label>
+                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Product name</label>
                                         <input type="text" className="premium-input" value={name} onChange={(e) => setName(e.target.value)} required />
                                     </div>
                                     <div>
-                                        <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Description</label>
+                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Description</label>
                                         <textarea rows="3" className="premium-input min-h-24 resize-none" value={description} onChange={(e) => setDescription(e.target.value)} required />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Price ($)</label>
+                                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Price</label>
                                             <input type="number" min="0" className="premium-input" value={price} onChange={(e) => setPrice(e.target.value)} required />
                                         </div>
                                         <div>
-                                            <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Stock</label>
+                                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Stock</label>
                                             <input type="number" min="0" className="premium-input" value={qty} onChange={(e) => setQty(e.target.value)} required />
                                         </div>
                                     </div>
@@ -343,14 +343,14 @@ const ProductList = () => {
 
 const ActionIcon = ({ onClick, icon, label, theme }) => {
     const themes = {
-        emerald: "text-emerald-600 border-emerald-100 hover:bg-emerald-600",
-        rose: "text-rose-600 border-rose-100 hover:bg-rose-600",
-        indigo: "text-indigo-600 border-indigo-100 hover:bg-indigo-600",
+        emerald: "text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10",
+        rose: "text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10",
+        indigo: "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10",
     };
 
     return (
-        <button onClick={onClick} className={`p-4 bg-white border-2 rounded-[22px] transition-all duration-300 hover:text-white shadow-sm hover:shadow-lg active:scale-90 group ${themes[theme]}`} title={label}>
-            <span className="block group-hover:scale-125 transition-transform duration-300">{icon}</span>
+        <button onClick={onClick} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-colors duration-200 ${themes[theme]}`} title={label}>
+            {icon}
         </button>
     );
 };

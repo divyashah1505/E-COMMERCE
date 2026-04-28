@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Users, ShoppingBag, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Activity, Download, Layers, Sparkles, Target } from 'lucide-react';
+import { Users, ShoppingBag, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Activity, Download, Layers, Sparkles, Target, MoreVertical, Package, ExternalLink } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { userService } from '../../services/userService';
 import { orderService } from '../../services/orderService';
@@ -18,31 +17,31 @@ const revenueData = [
   { name: 'Jul', current: 8100, previous: 5100 },
 ];
 
-const categoryData = [
-  { name: 'Streetwear Tops', value: 45, color: '#8B5CF6' }, // Electric Violet
-  { name: 'Premium Outerwear', value: 25, color: '#EC4899' }, // Deep Rose
-  { name: 'Sneakers', value: 20, color: '#3B82F6' }, // Bright Blue
-  { name: 'Accessories', value: 10, color: '#10B981' }, // Emerald
+const topProducts = [
+  { name: 'Premium Oversized Hoodie', sales: 124, revenue: '$7,440', growth: '+12%', image: '👕' },
+  { name: 'Classic Streetwear Cargo', sales: 98, revenue: '$5,880', growth: '+8%', image: '👖' },
+  { name: 'Urban Techshell Jacket', sales: 86, revenue: '$12,900', growth: '+15%', image: '🧥' },
+  { name: 'Essential Cotton Tee', sales: 245, revenue: '$6,125', growth: '+24%', image: '👕' },
 ];
 
-const StatCard = ({ title, value, icon: Icon, trend, isPositive, colorClass }) => (
-  <div className="premium-kpi relative overflow-hidden">
-    <div className={`absolute -right-8 -top-8 w-24 h-24 blur-3xl opacity-25 bg-gradient-to-br ${colorClass}`} />
-    <div className="flex justify-between items-start relative z-10">
-      <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white">
-        <Icon size={26} strokeWidth={2} />
+const StatCard = ({ title, value, icon: Icon, trend, isPositive }) => (
+  <div className="premium-kpi group transition-all hover:border-primary/20">
+    <div className="flex justify-between items-start">
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {value}
+          </h2>
+          <span className={`flex items-center text-[11px] font-bold ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
+            {isPositive ? <ArrowUpRight size={12} className="mr-0.5" /> : <ArrowDownRight size={12} className="mr-0.5" />}
+            {trend}
+          </span>
+        </div>
       </div>
-      <div className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-1.5 rounded-full ${isPositive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'
-        }`}>
-        {isPositive ? <ArrowUpRight size={14} strokeWidth={3} /> : <ArrowDownRight size={14} strokeWidth={3} />}
-        {trend}
+      <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-400 group-hover:text-primary transition-colors">
+        <Icon size={20} strokeWidth={2} />
       </div>
-    </div>
-    <div className="mt-6 relative z-10">
-      <h3 className="text-slate-500 dark:text-slate-400 font-semibold text-sm uppercase tracking-[0.11em] mb-2">{title}</h3>
-      <p className="text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
-        {value}
-      </p>
     </div>
   </div>
 );
@@ -69,120 +68,154 @@ const DashboardPage = () => {
   }, []);
 
   return (
-    <div className="premium-page relative">
+    <div className="premium-page space-y-6">
       <div className="premium-shell">
-        <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 glass-panel rounded-full w-fit">
-              <Sparkles size={16} className="text-amber-500" />
-              <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Premium Access</span>
-            </div>
-            <h1 className="premium-page-title text-slate-900 dark:text-white">
-              Clothiq Control
-              <span className="text-blue-600"> Center</span>
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Dashboard Overview
             </h1>
-            <p className="premium-body-text text-slate-500 dark:text-slate-300 max-w-xl">
-              Global command panel for revenue, operations, and customer growth.
+            <p className="text-sm text-slate-500 font-medium">
+              Monitor your store performance and customer activity.
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-6 px-6 h-14 premium-card mr-2">
-              <div className="text-center">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Status</p>
-                <p className="text-sm font-bold text-emerald-500">Optimized</p>
-              </div>
-              <div className="w-px h-8 bg-slate-100" />
-              <div className="text-center">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Zone</p>
-                <p className="text-sm font-bold text-slate-900 dark:text-white">Global</p>
-              </div>
-            </div>
-            <button className="premium-btn premium-btn-primary h-14 px-8 text-sm uppercase tracking-[0.14em]">
-              <Download size={18} strokeWidth={2.5} /> Export Report
+          <div className="flex items-center gap-3">
+            {/* <button className="premium-btn bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50">
+              <Download size={16} /> Export Reports
             </button>
+            <button className="premium-btn premium-btn-primary">
+              <Sparkles size={16} /> Create Campaign
+            </button> */}
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Revenue" value="$124.5K" icon={DollarSign} trend="+24.5%" isPositive={true} colorClass="from-indigo-500 to-blue-500" />
-          <StatCard title="Elite Shoppers" value={activeShoppers} icon={Users} trend="+12.1%" isPositive={true} colorClass="from-violet-500 to-purple-500" />
-          <StatCard title="Drops Velocity" value={completedOrdersCount} icon={Target} trend="+8.4%" isPositive={true} colorClass="from-rose-500 to-pink-500" />
-          <StatCard title="Return Margin" value="3.2%" icon={Activity} trend="-1.2%" isPositive={false} colorClass="from-emerald-500 to-teal-500" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard title="Total Users" value={activeShoppers} icon={Users}  isPositive={true} />
+
+          <StatCard title="Total Categories"  icon={DollarSign}  isPositive={true} />
+          <StatCard title="Total Products"  icon={ShoppingBag}  isPositive={true} />
+          <StatCard title="Total PromoCode"  icon={Activity}  isPositive={false} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 premium-card p-6 md:p-8 flex flex-col">
-            <div className="flex justify-between items-center mb-8">
+          <div className="lg:col-span-8 premium-card p-6 flex flex-col">
+            <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="premium-section-title text-slate-900 dark:text-white">Revenue Performance</h3>
-                <p className="text-sm font-semibold text-slate-400 uppercase tracking-[0.14em] mt-1.5">Season analytics / real-time</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Revenue Analysis</h3>
+                <p className="text-xs text-slate-500 font-medium">Monthly performance overview</p>
               </div>
-              <div className="flex items-center gap-6 text-xs font-semibold uppercase tracking-[0.12em] bg-slate-50 dark:bg-white/5 p-3.5 rounded-xl">
-                <div className="flex items-center gap-2 text-blue-600">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Current
-                </div>
-                <div className="flex items-center gap-2 text-slate-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-slate-200" /> Previous
-                </div>
+              <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                <button className="px-3 py-1 text-[11px] font-bold bg-white dark:bg-slate-800 shadow-sm rounded-md text-primary">Current</button>
+                <button className="px-3 py-1 text-[11px] font-bold text-slate-400 hover:text-slate-600">Previous</button>
               </div>
             </div>
 
-            <div className="h-[360px] w-full flex-1">
+            <div className="h-[340px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="mainGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} stroke="#E2E8F0" strokeDasharray="8 8" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 12, fontWeight: 900 }} dy={20} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 12, fontWeight: 900 }} tickFormatter={(v) => `$${v / 1000}k`} />
+                  <CartesianGrid vertical={false} stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeDasharray="3 3" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 600 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 600 }} tickFormatter={(v) => `$${v / 1000}k`} />
                   <Tooltip
-                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)', padding: '20px' }}
+                    contentStyle={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                   />
-                  <Area type="monotone" dataKey="previous" stroke="#E2E8F0" strokeWidth={2} strokeDasharray="10 10" fill="transparent" />
-                  <Area type="monotone" dataKey="current" stroke="#6366F1" strokeWidth={6} fill="url(#mainGradient)" animationDuration={2500} activeDot={{ r: 10, strokeWidth: 0, fill: '#6366F1' }} />
+                  <Area type="monotone" dataKey="current" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#chartGradient)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="lg:col-span-4 premium-card p-6 md:p-8 flex flex-col">
-                <h3 className="premium-section-title text-slate-900 dark:text-white mb-1">Portfolio Split</h3>
-            <p className="text-sm font-semibold text-slate-400 uppercase tracking-[0.14em] mb-8">Inventory share</p>
-
-            <div className="relative h-[280px] w-full mb-8">
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-5xl font-black text-slate-900 dark:text-white tracking-tight">100%</span>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mt-2">Total mix</span>
-              </div>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={categoryData} innerRadius={100} outerRadius={135} paddingAngle={10} dataKey="value" stroke="none">
-                    {categoryData.map((entry, index) => (
-                      <Cell key={index} fill={entry.color} cornerRadius={16} className="outline-none" />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+          <div className="lg:col-span-4 premium-card p-6 flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Top Products</h3>
+              <button className="p-1.5 rounded-md hover:bg-slate-50 text-slate-400"><MoreVertical size={16} /></button>
             </div>
 
-            <div className="mt-auto space-y-4">
-              {categoryData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between group cursor-default">
-                  <div className="flex items-center gap-5">
-                    <div className="w-3 h-3 rounded-full shadow-lg" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-[0.06em] group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{item.name}</span>
+            <div className="space-y-5 flex-1">
+              {topProducts.map((product) => (
+                <div key={product.name} className="flex items-center gap-4 group cursor-pointer">
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-xl shadow-sm border border-slate-100 dark:border-slate-800 group-hover:border-primary/20 transition-all">
+                    {product.image}
                   </div>
-                  <span className="text-base font-bold text-slate-900 dark:text-white">{item.value}%</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-primary transition-colors">{product.name}</p>
+                    <p className="text-xs text-slate-400 font-medium">{product.sales} sales</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{product.revenue}</p>
+                    <p className="text-[10px] font-bold text-emerald-500">{product.growth}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="mt-6 w-full py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all flex items-center justify-center gap-2">
+              View All Products <ExternalLink size={12} />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 premium-card p-6">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Recent Transactions</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-black">
+                    <th className="pb-4 font-black">Customer</th>
+                    <th className="pb-4 font-black">Product</th>
+                    <th className="pb-4 font-black">Amount</th>
+                    <th className="pb-4 font-black">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 dark:divide-slate-900">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i} className="group">
+                      <td className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-[10px] font-bold">JD</div>
+                          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">John Doe</span>
+                        </div>
+                      </td>
+                      <td className="py-4 text-sm font-medium text-slate-500">Premium Hoodie</td>
+                      <td className="py-4 text-sm font-bold text-slate-900 dark:text-white">$89.00</td>
+                      <td className="py-4">
+                        <span className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-tight">Success</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="premium-card p-6">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Store Health</h3>
+            <div className="space-y-6">
+              {[
+                { label: 'Conversion Rate', value: '3.4%', progress: 65, color: 'bg-primary' },
+                { label: 'Avg Order Value', value: '$124', progress: 82, color: 'bg-emerald-500' },
+                { label: 'Bounce Rate', value: '42%', progress: 42, color: 'bg-rose-500' },
+              ].map((metric) => (
+                <div key={metric.label} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-500">{metric.label}</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">{metric.value}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
+                    <div className={`h-full ${metric.color} transition-all duration-1000`} style={{ width: `${metric.progress}%` }} />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>

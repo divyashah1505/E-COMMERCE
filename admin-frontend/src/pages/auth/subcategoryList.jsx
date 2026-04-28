@@ -72,13 +72,13 @@ const SubcategoryList = () => {
             if (sub.status === 1) {
                 await categoryService.deactivateCategory(sub._id);
                 toast.success(`${sub.name} Deactivated`);
-                setSubcategories(prev => prev.map(item => 
+                setSubcategories(prev => prev.map(item =>
                     item._id === sub._id ? { ...item, status: 0 } : item
                 ));
             } else {
                 await categoryService.reactivateCategory(sub._id);
                 toast.success(`${sub.name} Reactivated`);
-                setSubcategories(prev => prev.map(item => 
+                setSubcategories(prev => prev.map(item =>
                     item._id === sub._id ? { ...item, status: 1 } : item
                 ));
             }
@@ -167,10 +167,10 @@ const SubcategoryList = () => {
         if (!selectedFile) {
             return toast.error("Please upload a product image");
         }
-        
+
         try {
             setSubmitting(true);
-            
+
             const productFormData = new FormData();
             productFormData.append("name", name);
             productFormData.append("description", description);
@@ -203,25 +203,25 @@ const SubcategoryList = () => {
                     Return to Main Category
                 </button>
 
-                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
+                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
                     <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-600 text-white rounded-full text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-indigo-200">
-                            <Layers size={12} strokeWidth={3} />
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300">
+                            <Layers size={12} strokeWidth={2.5} />
                             {parentCategory?.name || 'Loading...'}
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight">
-                            Sub-Categories <span className="text-indigo-600/80 font-bold">Panel</span>
+                        <h1 className="premium-page-title text-slate-900 dark:text-slate-100">
+                            Subcategories
                         </h1>
-                        <p className="text-slate-600 font-semibold max-w-xl text-lg leading-relaxed italic opacity-80">
+                        <p className="premium-body-text text-slate-600 dark:text-slate-300 max-w-xl">
                             Managing Sub-Categories for: {parentCategory?.name || 'the current category'}.
                         </p>
                     </div>
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                    className="premium-btn premium-btn-primary px-6 py-3.5 uppercase tracking-[0.14em]"
+                        className="premium-btn premium-btn-primary px-6 py-3.5 uppercase tracking-[0.14em]"
                     >
-                    <Plus size={18} strokeWidth={3} />
+                        <Plus size={18} strokeWidth={3} />
                         New Sub-Category
                     </button>
                 </header>
@@ -240,7 +240,7 @@ const SubcategoryList = () => {
                 </div>
 
                 <div className="relative">
-                    <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">
+                    <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 premium-table-head">
                         <div className="col-span-7">SubCategory Identity</div>
                         <div className="col-span-2 text-center">Status</div>
                         <div className="col-span-3 text-right">Actions</div>
@@ -255,10 +255,10 @@ const SubcategoryList = () => {
                                 <div className="col-span-7 flex items-center gap-8">
                                     <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10">
                                         {sub.image ? (
-                                            <img 
-                                                src={`${IMAGE_BASE_URL}/${sub.image}`} 
-                                                alt={sub.name} 
-                                                className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                            <img
+                                                src={`${IMAGE_BASE_URL}/${sub.image}`}
+                                                alt={sub.name}
+                                                className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
                                         ) : (
                                             <ImageIcon className="text-slate-200" size={36} />
@@ -291,10 +291,10 @@ const SubcategoryList = () => {
                                 <div className="col-span-3 flex items-center justify-end gap-3">
                                     {sub.status === 1 ? (
                                         <>
-                                            <ActionIcon onClick={() => navigate(PATHS.SUBCATEGORY_PRODUCTS.replace(':categoryId', categoryId).replace(':subcategoryId', sub._id))} icon={<Eye size={20} />} label="View Products" theme="indigo" />
-                                            <ActionIcon onClick={() => handleOpenProductModal(sub._id)} icon={<ShoppingBag size={20} />} label="Add Product" theme="blue" />
-                                            <ActionIcon onClick={() => handleEditSubcategory(sub)} icon={<Edit3 size={20} />} label="Edit SubCategory" theme="emerald" />
-                                            <ActionIcon onClick={() => handleToggleStatus(sub)} icon={<Power size={20} />} label="Deactivate" theme="rose" />
+                                            <ActionIcon onClick={() => navigate(PATHS.SUBCATEGORY_PRODUCTS.replace(':categoryId', categoryId).replace(':subcategoryId', sub._id))} icon={<Eye size={16} />} label="View Products" theme="indigo" />
+                                            <ActionIcon onClick={() => handleOpenProductModal(sub._id)} icon={<ShoppingBag size={16} />} label="Add Product" theme="blue" />
+                                            <ActionIcon onClick={() => handleEditSubcategory(sub)} icon={<Edit3 size={16} />} label="Edit SubCategory" theme="emerald" />
+                                            <ActionIcon onClick={() => handleToggleStatus(sub)} icon={<Power size={16} />} label="Deactivate" theme="rose" />
                                         </>
                                     ) : (
                                         <button
@@ -317,10 +317,10 @@ const SubcategoryList = () => {
                     <div className="premium-modal-card max-w-2xl">
                         <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/10">
                             <div>
-                                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
                                     {editingSubcategory ? 'Modify Sub-Node' : 'New Sub-Category'}
                                 </h2>
-                                <p className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.3em] mt-3 flex items-center gap-2">
+                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2">
                                     <CheckCircle2 size={14} /> Parent Category: {parentCategory?.name}
                                 </p>
                             </div>
@@ -333,7 +333,7 @@ const SubcategoryList = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-8">
                                     <div className="group">
-                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Sub-Category Name</label>
+                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Subcategory name</label>
                                         <input
                                             type="text"
                                             className="premium-input"
@@ -344,7 +344,7 @@ const SubcategoryList = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Description</label>
+                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Description</label>
                                         <textarea
                                             rows="4"
                                             className="premium-input min-h-28 resize-none"
@@ -356,7 +356,7 @@ const SubcategoryList = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col">
-                                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Upload Image</label>
+                                    <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Image</label>
                                     <div
                                         onClick={() => fileInputRef.current.click()}
                                         className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-48"
@@ -447,17 +447,15 @@ const SubcategoryList = () => {
 
 const ActionIcon = ({ onClick, icon, label, theme }) => {
     const themes = {
-        indigo: "text-indigo-600 border-indigo-100 hover:bg-indigo-600",
-        blue: "text-blue-600 border-blue-100 hover:bg-blue-600",
-        emerald: "text-emerald-600 border-emerald-100 hover:bg-emerald-600",
-        rose: "text-rose-600 border-rose-100 hover:bg-rose-600"
+        indigo: "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10",
+        blue: "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10",
+        emerald: "text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10",
+        rose: "text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10"
     };
 
     return (
-        <button onClick={onClick} className={`p-4 bg-white border-2 rounded-[22px] transition-all duration-300 hover:text-white shadow-sm hover:shadow-lg active:scale-90 group ${themes[theme]}`} title={label}>
-            <span className="block group-hover:scale-125 transition-transform duration-300">
-                {icon}
-            </span>
+        <button onClick={onClick} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-colors duration-200 ${themes[theme]}`} title={label}>
+            {icon}
         </button>
     );
 };
