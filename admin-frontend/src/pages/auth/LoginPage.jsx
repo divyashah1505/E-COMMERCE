@@ -40,17 +40,17 @@ const LoginPage = () => {
           };
           
 if (token) {
-  setToken(token);
+ setToken(token);
 
-  dispatch(setCredentials({
-    admin: adminData,
-    token,
-  }));
+dispatch(setCredentials({
+  admin: adminData,
+  token,
+}));
 
-  // wait 1 tick before navigation (IMPORTANT FIX)
-  setTimeout(() => {
-    navigate('/dashboard', { replace: true });
-  }, 50);
+// IMPORTANT: wait for redux sync
+setTimeout(() => {
+  navigate('/dashboard', { replace: true });
+}, 50);
 }
 toast.success('Access Granted. Welcome.', {
   style: {

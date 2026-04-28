@@ -6,19 +6,20 @@ import { PATHS } from '../../routes/routePaths';
 const AdminAuthGuard = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated } = useSelector((state) => state.auth);
-
   const token = getToken();
 
-  // IMPORTANT: wait for Redux hydration
+  // ❌ no token → force login
   if (!token) {
     return <Navigate to={PATHS.LOGIN} state={{ from: location }} replace />;
   }
 
-  // prevent flicker when redux is still updating
-  if (!isAuthenticated && token) {
-    return <div className="flex items-center justify-center h-screen">
-      Loading session...
-    </div>;
+  // ⏳ token exists but redux not ready yet → wait (IMPORTANT)
+  if (token && !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading session...
+      </div>
+    );
   }
 
   return children;

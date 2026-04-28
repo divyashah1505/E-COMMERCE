@@ -9,9 +9,9 @@ const token = getToken();
 const preloadedState = {
   auth: {
     admin: null,
-    token: token || null,
-    is2faverified: false,
+    token,
     isAuthenticated: !!token,
+    is2faverified: false,
     loading: false,
     error: null,
   },
