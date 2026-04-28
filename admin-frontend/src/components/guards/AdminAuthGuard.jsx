@@ -5,23 +5,15 @@ import { PATHS } from '../../routes/routePaths';
 
 const AdminAuthGuard = ({ children }) => {
   const location = useLocation();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  // Use token existence as auth check; Redux state may not be synced instantly
   const token = getToken();
 
-  // 1. No token → redirect immediately
   if (!token) {
+    // No token, redirect to login preserving intended destination
     return <Navigate to={PATHS.LOGIN} state={{ from: location }} replace />;
   }
 
-  // 2. Token exists but Redux not ready → WAIT (prevents flicker redirect)
-  if (!isAuthenticated && token) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading session...
-      </div>
-    );
-  }
-
+  // Token exists, render protected content
   return children;
 };
 
