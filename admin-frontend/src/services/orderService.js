@@ -7,7 +7,7 @@ export const orderService = {
    */
   getOrderList: async () => {
     try {
-      const response = await axiosInstance.get('/admin/order-list');
+      const response = await axiosInstance.get('/order-list');
       return response.data;
     } catch (error) {
       console.error('Error fetching order list:', error);
