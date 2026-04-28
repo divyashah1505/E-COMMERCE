@@ -40,28 +40,26 @@ const LoginPage = () => {
           };
           
 if (token) {
- setToken(token);
+  setToken(token);
 
-dispatch(setCredentials({
-  admin: adminData,
-  token,
-}));
+  dispatch(setCredentials({
+    admin: adminData,
+    token,
+  }));
 
-// IMPORTANT: wait for redux sync
-setTimeout(() => {
-  navigate('/dashboard', { replace: true });
-}, 50);
+  toast.success('Access Granted. Welcome.', {
+    style: {
+      borderRadius: '12px',
+      background: '#0F172A',
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+  });
+
+  setTimeout(() => {
+    navigate('/dashboard', { replace: true });
+  }, 50);
 }
-toast.success('Access Granted. Welcome.', {
-  style: {
-    borderRadius: '12px',
-    background: '#0F172A',
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-});
-
-navigate('/dashboard', { replace: true });
         }
       } catch (error) {
         console.error('Login error details:', error.response?.data || error.message);
