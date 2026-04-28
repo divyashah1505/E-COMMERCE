@@ -1,11 +1,19 @@
-import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Navigate, useLocation } from 'react-router-dom';
+import { getToken } from '../../utils/tokenHelper';
+import { PATHS } from '../../routes/routePaths';
 
 const AdminAuthGuard = ({ children }) => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const token = getToken();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (!token) {
+    return (
+      <Navigate
+        to={PATHS.LOGIN}
+        state={{ from: location }}
+        replace
+      />
+    );
   }
 
   return children;

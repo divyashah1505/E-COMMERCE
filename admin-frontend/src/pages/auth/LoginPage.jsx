@@ -39,15 +39,32 @@ const LoginPage = () => {
             email: payload.email,
           };
           
-          if (token) setToken(token);
-          if (payload.refreshToken) localStorage.setItem('admin_refresh_token', payload.refreshToken);
-          
-          dispatch(setCredentials({ admin: adminData, token }));
-          
-          toast.success('Access Granted. Welcome.', {
-            style: { borderRadius: '12px', background: '#0F172A', color: '#fff', fontWeight: 'bold' }
-          });
-          navigate('/dashboard');
+     if (token) {
+  setToken(token);
+}
+
+if (payload.refreshToken) {
+  localStorage.setItem(
+    'admin_refresh_token',
+    payload.refreshToken
+  );
+}
+
+dispatch(setCredentials({
+  admin: adminData,
+  token,
+}));
+
+toast.success('Access Granted. Welcome.', {
+  style: {
+    borderRadius: '12px',
+    background: '#0F172A',
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
+
+navigate('/dashboard', { replace: true });
         }
       } catch (error) {
         console.error('Login error details:', error.response?.data || error.message);
