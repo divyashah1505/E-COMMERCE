@@ -56,6 +56,12 @@ const LoginPage = () => {
           toast.error('Token not received from server');
           return;
         }
+        // Build admin data object
+        const adminData = {
+          username: payload.username,
+          email: payload.email,
+        };
+
         // Store token and update Redux
         setToken(token);
         dispatch(setCredentials({ admin: adminData, token }));

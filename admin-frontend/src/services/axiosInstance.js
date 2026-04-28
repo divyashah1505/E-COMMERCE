@@ -29,10 +29,26 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     const isLoginEndpoint = error.config?.url?.includes('/loginAdmin');
+    const status = error.response?.status;
+    const errorMessage = (error.response?.data?.message || '').toLowerCase();
 
-    if (error.response?.status === 401 && !isLoginEndpoint) {
-      removeToken();
-      window.location.href = '/login';
+    if (status === 401 && !isLoginEndpoint) {
+      // Only clear the stored token when the backend EXPLICITLY says the
+      // token is expired or malformed.  Generic 401s caused by backend
+      // service outages (e.g. Redis unavailable) must NOT destroy the
+      // session — the user legitimately logged in and holds a valid JWT.
+      const isTokenTrulyInvalid =
+        errorMessage.includes('token expired') ||
+        errorMessage.includes('invalid token') ||
+        errorMessage.includes('jwt expired') ||
+        errorMessage.includes('jwt malformed') ||
+        errorMessage.includes('token is not valid');
+
+      if (isTokenTrulyInvalid) {
+        removeToken();
+        // Do NOT hard-redirect here — React's AdminAuthGuard will
+        // detect the missing token and navigate to /login on next render.
+      }
     }
 
     return Promise.reject(error);

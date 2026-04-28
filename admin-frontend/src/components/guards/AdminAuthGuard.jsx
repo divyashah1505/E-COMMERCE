@@ -12,7 +12,6 @@ const AdminAuthGuard = ({ children }) => {
   const effectiveAuth = token || isAuthenticated;
   console.log('AdminAuthGuard - token:', token, 'isAuthenticated:', isAuthenticated);
   if (!effectiveAuth) {
-    // No auth info, redirect to login preserving intended destination
     return <Navigate to={PATHS.LOGIN} state={{ from: location }} replace />;
   }
 
