@@ -7,6 +7,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
 import { productService } from "../../services/productService";
+import { categoryService } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL ;
@@ -130,18 +131,34 @@ const ProductList = () => {
 
         try {
             setSubmitting(true);
-            const data = new FormData();
-            data.append("name", name);
-            data.append("description", description);
-            data.append("price", price);
-            data.append("qty", qty);
-            if (selectedFile) data.append("image", selectedFile);
+            
+            let imageName = editingProduct?.image || null;
 
-            await productService.updateProduct(editingProduct._id, data);
+            // Step 1: Upload image if a new file is selected
+            if (selectedFile) {
+                const uploadData = new FormData();
+                uploadData.append("image", selectedFile);
+                const uploadRes = await categoryService.uploadImage(uploadData);
+                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
+                    imageName = uploadRes.data[0];
+                }
+            }
+
+            // Step 2: Prepare JSON data
+            const productData = {
+                name,
+                description,
+                price: Number(price),
+                qty: Number(qty),
+                image: imageName
+            };
+
+            await productService.updateProduct(editingProduct._id, productData);
             toast.success("Product updated successfully");
             handleCloseModal();
             fetchProducts();
         } catch (error) {
+            console.error("Product Update Error:", error);
             toast.error(error.response?.data?.message || "Update failed");
         } finally {
             setSubmitting(false);

@@ -115,26 +115,42 @@ const CategoryList = () => {
         e.preventDefault();
         try {
             setSubmitting(true);
-            const data = new FormData();
-            data.append("name", name);
-            data.append("description", description);
-            if (selectedFile) data.append("image", selectedFile);
+            
+            let imageName = editingCategory?.image || null;
+
+            // Step 1: Upload image if a new file is selected
+            if (selectedFile) {
+                const uploadData = new FormData();
+                uploadData.append("image", selectedFile);
+                const uploadRes = await categoryService.uploadImage(uploadData);
+                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
+                    imageName = uploadRes.data[0];
+                }
+            }
+
+            // Step 2: Prepare JSON data
+            const categoryData = {
+                name,
+                description,
+                image: imageName
+            };
 
             if (isSubcategoryModalOpen && selectedCategoryId) {
-                data.append("categoryId", selectedCategoryId);
-                await categoryService.addCategory(data);
+                categoryData.categoryId = selectedCategoryId;
+                await categoryService.addCategory(categoryData);
                 toast.success("Subcategory added successfully");
             } else if (editingCategory) {
-                await categoryService.updateCategory(editingCategory._id, data);
+                await categoryService.updateCategory(editingCategory._id, categoryData);
                 toast.success("Category updated successfully");
             } else {
-                await categoryService.addCategory(data);
+                await categoryService.addCategory(categoryData);
                 toast.success("New category created successfully");
             }
 
             handleCloseModal();
             fetchCategories();
         } catch (error) {
+            console.error("Submit Error:", error);
             toast.error(error.response?.data?.message || "Operation failed");
         } finally {
             setSubmitting(false);

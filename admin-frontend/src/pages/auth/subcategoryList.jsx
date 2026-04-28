@@ -131,23 +131,39 @@ const SubcategoryList = () => {
         e.preventDefault();
         try {
             setSubmitting(true);
-            const data = new FormData();
-            data.append("name", name);
-            data.append("description", description);
-            if (selectedFile) data.append("image", selectedFile);
+            
+            let imageName = editingSubcategory?.image || null;
+
+            // Step 1: Upload image if a new file is selected
+            if (selectedFile) {
+                const uploadData = new FormData();
+                uploadData.append("image", selectedFile);
+                const uploadRes = await categoryService.uploadImage(uploadData);
+                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
+                    imageName = uploadRes.data[0];
+                }
+            }
+
+            // Step 2: Prepare JSON data
+            const subcategoryData = {
+                name,
+                description,
+                image: imageName
+            };
 
             if (editingSubcategory) {
-                await categoryService.updateCategory(editingSubcategory._id, data);
+                await categoryService.updateCategory(editingSubcategory._id, subcategoryData);
                 toast.success("Subcategory updated successfully");
             } else {
-                data.append("categoryId", categoryId);
-                await categoryService.addCategory(data);
+                subcategoryData.categoryId = categoryId;
+                await categoryService.addCategory(subcategoryData);
                 toast.success("Subcategory added successfully");
             }
 
             handleCloseModal();
             fetchData();
         } catch (error) {
+            console.error("Subcategory Submit Error:", error);
             toast.error("Operation failed");
         } finally {
             setSubmitting(false);
@@ -157,32 +173,41 @@ const SubcategoryList = () => {
     const handleProductSubmit = async (e) => {
         e.preventDefault();
 
-        // VALIDATION: No negative values
-        if (Number(price) < 0) {
-            return toast.error("Price cannot be a negative value.");
-        }
-        if (Number(qty) < 0) {
-            return toast.error("Stock quantity cannot be a negative value.");
-        }
-        if (!selectedFile) {
-            return toast.error("Please upload a product image");
-        }
+        // VALIDATION
+        if (Number(price) < 0) return toast.error("Price cannot be negative");
+        if (Number(qty) < 0) return toast.error("Stock quantity cannot be negative");
+        if (!selectedFile) return toast.error("Please upload a product image");
 
         try {
             setSubmitting(true);
 
-            const productFormData = new FormData();
-            productFormData.append("name", name);
-            productFormData.append("description", description);
-            productFormData.append("qty", Number(qty));
-            productFormData.append("price", Number(price));
-            productFormData.append("categoryId", selectedSubId);
-            productFormData.append("image", selectedFile);
+            // Step 1: Upload Product Image
+            const uploadData = new FormData();
+            uploadData.append("image", selectedFile);
+            const uploadRes = await categoryService.uploadImage(uploadData);
+            
+            let uploadedImageName = null;
+            if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
+                uploadedImageName = uploadRes.data[0];
+            } else {
+                throw new Error("Image upload failed");
+            }
 
-            await categoryService.addProduct(productFormData);
+            // Step 2: Send Product Data as JSON
+            const productData = {
+                name,
+                description,
+                qty: Number(qty),
+                price: Number(price),
+                categoryId: selectedSubId,
+                image: uploadedImageName
+            };
+
+            await categoryService.addProduct(productData);
             toast.success("Product added successfully");
             handleCloseModal();
         } catch (error) {
+            console.error("Product Submit Error:", error);
             toast.error(error.response?.data?.message || "Product creation failed");
         } finally {
             setSubmitting(false);

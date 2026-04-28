@@ -32,5 +32,11 @@ export const categoryService = {
     addProduct: async (productData) => {
         const response = await axiosInstance.post('/product', productData);
         return response.data;
+    },
+
+    // Generic Image Upload (Two-step process)
+    uploadImage: async (formData) => {
+        const response = await axiosInstance.post('/upload-photos', formData);
+        return response.data;
     }
 };
