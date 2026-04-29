@@ -91,7 +91,7 @@ const SubcategoryList = () => {
         setEditingSubcategory(subcategory);
         setName(subcategory.name);
         setDescription(subcategory.description || "");
-        setPreviewUrl(subcategory.image ? `${IMAGE_BASE_URL}/${subcategory.image}` : null);
+        setPreviewUrl(subcategory.image ? `${subcategory.image}` : null);
         setIsModalOpen(true);
     };
 
