@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     Search, Plus, Edit3, Layers, Image as ImageIcon,
-    X, Upload, Power, LayoutGrid,
+    X, Upload, Power, Ban, LayoutGrid,
     CheckCircle2, AlertCircle, Eye
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -221,7 +221,7 @@ const CategoryList = () => {
                                         <div className="h-16 w-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-white/10 transition-all">
                                             {category.image ? (
                                                 <img
-                                                    src={`${IMAGE_BASE_URL}/${category.image}`} 
+                                                    src={`${IMAGE_BASE_URL}/${category.image}`}
                                                     className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
@@ -265,8 +265,12 @@ const CategoryList = () => {
                                                 <ActionIcon onClick={() => handleViewSubcategories(category._id)} icon={<Eye size={16} />} label="View Subcategories" theme="indigo" />
                                                 <ActionIcon onClick={() => handleAddSubcategory(category._id)} icon={<Plus size={16} />} label="Add Subcategory" theme="blue" />
                                                 <ActionIcon onClick={() => handleEditCategory(category)} icon={<Edit3 size={16} />} label="Edit Category" theme="emerald" />
-                                                <ActionIcon onClick={() => handleToggleStatus(category)} icon={<Power size={16} />} label="Deactivate" theme="rose" />
-                                            </>
+                                                <ActionIcon
+                                                    onClick={() => handleToggleStatus(category)}
+                                                    icon={<Ban size={16} />}
+                                                    label="Deactivate Category"
+                                                    theme="rose"
+                                                />                                            </>
                                         ) : (
                                             <button
                                                 onClick={() => handleToggleStatus(category)}
