@@ -220,7 +220,7 @@ const CategoryList = () => {
                                         <div className="h-16 w-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-white/10 transition-all">
                                             {category.image ? (
                                                 <img
-                                                    src={`${IMAGE_BASE_URL}/${category.image}`}
+                                                    src={`${category.image}`}
                                                     className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
