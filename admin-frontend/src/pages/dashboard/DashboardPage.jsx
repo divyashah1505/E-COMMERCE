@@ -1,12 +1,31 @@
+
 import { useState, useEffect } from 'react';
-import { Users, ShoppingBag, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Activity, Download, Layers, Sparkles, Target, MoreVertical, Package, ExternalLink } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  Users,
+  ShoppingBag,
+  DollarSign,
+  Activity,
+  ArrowUpRight,
+  ArrowDownRight,
+  MoreVertical,
+  ExternalLink,
+  Layers
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
 } from 'recharts';
+
 import { userService } from '../../services/userService';
 import { orderService } from '../../services/orderService';
+import { categoryService } from '../../services/categoryService';
 
-// --- DATA ---
+// ---------------- DATA ----------------
 const revenueData = [
   { name: 'Jan', current: 4000, previous: 2400 },
   { name: 'Feb', current: 4800, previous: 2800 },
@@ -24,21 +43,43 @@ const topProducts = [
   { name: 'Essential Cotton Tee', sales: 245, revenue: '$6,125', growth: '+24%', image: '👕' },
 ];
 
-const StatCard = ({ title, value, icon: Icon, trend, isPositive }) => (
+// ---------------- KPI CARD ----------------
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  isPositive = true,
+}) => (
   <div className="premium-kpi group transition-all hover:border-primary/20">
     <div className="flex justify-between items-start">
       <div className="space-y-2">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          {title}
+        </p>
+
         <div className="flex items-baseline gap-2">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             {value}
           </h2>
-          <span className={`flex items-center text-[11px] font-bold ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
-            {isPositive ? <ArrowUpRight size={12} className="mr-0.5" /> : <ArrowDownRight size={12} className="mr-0.5" />}
-            {trend}
-          </span>
+
+          {trend && (
+            <span
+              className={`flex items-center text-[11px] font-bold ${
+                isPositive ? 'text-emerald-500' : 'text-rose-500'
+              }`}
+            >
+              {isPositive ? (
+                <ArrowUpRight size={12} className="mr-0.5" />
+              ) : (
+                <ArrowDownRight size={12} className="mr-0.5" />
+              )}
+              {trend}
+            </span>
+          )}
         </div>
       </div>
+
       <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-400 group-hover:text-primary transition-colors">
         <Icon size={20} strokeWidth={2} />
       </div>
@@ -46,30 +87,59 @@ const StatCard = ({ title, value, icon: Icon, trend, isPositive }) => (
   </div>
 );
 
+// ---------------- DASHBOARD ----------------
 const DashboardPage = () => {
-  const [activeShoppers, setActiveShoppers] = useState('...');
-  const [completedOrdersCount, setCompletedOrdersCount] = useState('...');
+  const [totalUsers, setTotalUsers] = useState('...');
+  const [totalCategories, setTotalCategories] = useState('...');
+  const [totalProducts] = useState('...');
+  const [totalPromoCodes] = useState('...');
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await userService.getUserList({ page: 1, limit: 1 });
-        if (response?.data?.metaData?.total !== undefined) setActiveShoppers(response.data.metaData.total.toLocaleString());
-      } catch (error) { setActiveShoppers('1,284'); }
-
-      try {
-        const orderResponse = await orderService.getOrderList();
-        const ordersArray = Array.isArray(orderResponse?.data) ? orderResponse.data : [];
-        const completedCount = ordersArray.filter(o => o?.status?.toLowerCase() === 'completed').length;
-        setCompletedOrdersCount(completedCount > 0 ? completedCount.toLocaleString() : '482');
-      } catch (error) { setCompletedOrdersCount('482'); }
-    };
     fetchDashboardData();
   }, []);
+
+  const fetchDashboardData = async () => {
+    fetchUsers();
+    fetchCategories();
+  };
+
+  // ---------------- USERS ----------------
+  const fetchUsers = async () => {
+    try {
+      const response = await userService.getUserList({
+        page: 1,
+        limit: 1,
+      });
+
+      const total = response?.data?.metaData?.total ?? 0;
+      setTotalUsers(total.toLocaleString());
+    } catch (error) {
+      console.error('User count fetch failed:', error);
+      setTotalUsers('0');
+    }
+  };
+
+  // ---------------- CATEGORIES ----------------
+  const fetchCategories = async () => {
+    try {
+      const response = await categoryService.getCategoryList();
+
+      // Only root categories are returned by your backend
+      const categories = Array.isArray(response?.data)
+        ? response.data
+        : [];
+
+      setTotalCategories(categories.length.toLocaleString());
+    } catch (error) {
+      console.error('Category count fetch failed:', error);
+      setTotalCategories('0');
+    }
+  };
 
   return (
     <div className="premium-page space-y-6">
       <div className="premium-shell">
+        {/* HEADER */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -79,23 +149,37 @@ const DashboardPage = () => {
               Monitor your store performance and customer activity.
             </p>
           </div>
-
-          <div className="flex items-center gap-3">
-            {/* <button className="premium-btn bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50">
-              <Download size={16} /> Export Reports
-            </button>
-            <button className="premium-btn premium-btn-primary">
-              <Sparkles size={16} /> Create Campaign
-            </button> */}
-          </div>
         </header>
 
+        {/* KPI CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Total Users" value={activeShoppers} icon={Users} isPositive={true} />
+          <StatCard
+            title="Total Users"
+            value={totalUsers}
+            icon={Users}
+            isPositive
+          />
 
-          <StatCard title="Total Categories" icon={DollarSign} isPositive={true} />
-          <StatCard title="Total Products" icon={ShoppingBag} isPositive={true} />
-          <StatCard title="Total PromoCode" icon={Activity} isPositive={false} />
+          <StatCard
+            title="Total Categories"
+            value={totalCategories}
+            icon={Layers}
+            isPositive
+          />
+
+          <StatCard
+            title="Total Products"
+            value={totalProducts}
+            icon={ShoppingBag}
+            isPositive
+          />
+
+          <StatCard
+            title="Total PromoCode"
+            value={totalPromoCodes}
+            icon={Activity}
+            isPositive={false}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
