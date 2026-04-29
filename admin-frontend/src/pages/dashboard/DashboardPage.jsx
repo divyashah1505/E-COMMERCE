@@ -1,15 +1,13 @@
-
 import { useState, useEffect } from 'react';
 import {
   Users,
   ShoppingBag,
-  DollarSign,
   Activity,
   ArrowUpRight,
   ArrowDownRight,
   MoreVertical,
   ExternalLink,
-  Layers
+  Layers,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -18,12 +16,13 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 
 import { userService } from '../../services/userService';
-import { orderService } from '../../services/orderService';
 import { categoryService } from '../../services/categoryService';
+import { productService } from '../../services/productService';
+import { promoCodeService } from '../../services/promoCodeService';
 
 // ---------------- DATA ----------------
 const revenueData = [
@@ -37,10 +36,34 @@ const revenueData = [
 ];
 
 const topProducts = [
-  { name: 'Premium Oversized Hoodie', sales: 124, revenue: '$7,440', growth: '+12%', image: '👕' },
-  { name: 'Classic Streetwear Cargo', sales: 98, revenue: '$5,880', growth: '+8%', image: '👖' },
-  { name: 'Urban Techshell Jacket', sales: 86, revenue: '$12,900', growth: '+15%', image: '🧥' },
-  { name: 'Essential Cotton Tee', sales: 245, revenue: '$6,125', growth: '+24%', image: '👕' },
+  {
+    name: 'Premium Oversized Hoodie',
+    sales: 124,
+    revenue: '$7,440',
+    growth: '+12%',
+    image: '👕',
+  },
+  {
+    name: 'Classic Streetwear Cargo',
+    sales: 98,
+    revenue: '$5,880',
+    growth: '+8%',
+    image: '👖',
+  },
+  {
+    name: 'Urban Techshell Jacket',
+    sales: 86,
+    revenue: '$12,900',
+    growth: '+15%',
+    image: '🧥',
+  },
+  {
+    name: 'Essential Cotton Tee',
+    sales: 245,
+    revenue: '$6,125',
+    growth: '+24%',
+    image: '👕',
+  },
 ];
 
 // ---------------- KPI CARD ----------------
@@ -91,16 +114,20 @@ const StatCard = ({
 const DashboardPage = () => {
   const [totalUsers, setTotalUsers] = useState('...');
   const [totalCategories, setTotalCategories] = useState('...');
-  const [totalProducts] = useState('...');
-  const [totalPromoCodes] = useState('...');
+  const [totalProducts, setTotalProducts] = useState('...');
+  const [totalPromoCodes, setTotalPromoCodes] = useState('...');
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
-    fetchUsers();
-    fetchCategories();
+    await Promise.all([
+      fetchUsers(),
+      fetchCategories(),
+      fetchProducts(),
+      fetchPromoCodes(),
+    ]);
   };
 
   // ---------------- USERS ----------------
@@ -124,15 +151,54 @@ const DashboardPage = () => {
     try {
       const response = await categoryService.getCategoryList();
 
-      // Only root categories are returned by your backend
       const categories = Array.isArray(response?.data)
         ? response.data
+        : Array.isArray(response)
+        ? response
         : [];
 
       setTotalCategories(categories.length.toLocaleString());
     } catch (error) {
       console.error('Category count fetch failed:', error);
       setTotalCategories('0');
+    }
+  };
+
+  // ---------------- PRODUCTS ----------------
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getProductList();
+
+      const products = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+
+      setTotalProducts(products.length.toLocaleString());
+    } catch (error) {
+      console.error('Product count fetch failed:', error);
+      setTotalProducts('0');
+    }
+  };
+
+  // ---------------- PROMO CODES ----------------
+  const fetchPromoCodes = async () => {
+    try {
+      const response = await promoCodeService.getPromoCodes();
+
+      const promoCodes = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.promoCodes)
+        ? response.promoCodes
+        : Array.isArray(response)
+        ? response
+        : [];
+
+      setTotalPromoCodes(promoCodes.length.toLocaleString());
+    } catch (error) {
+      console.error('Promo code count fetch failed:', error);
+      setTotalPromoCodes('0');
     }
   };
 
@@ -175,10 +241,10 @@ const DashboardPage = () => {
           />
 
           <StatCard
-            title="Total PromoCode"
+            title="Total Promo Codes"
             value={totalPromoCodes}
             icon={Activity}
-            isPositive={false}
+            isPositive
           />
         </div>
 
