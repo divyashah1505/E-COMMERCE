@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-    Search, Plus, Edit3, Layers, Image as ImageIcon,
-    X, Upload, Power, Ban, LayoutGrid,
-    CheckCircle2, AlertCircle, Eye
+    Search,
+    Plus,
+    Edit3,
+    Layers,
+    Image as ImageIcon,
+    X,
+    Upload,
+    LayoutGrid,
+    CheckCircle2,
+    AlertCircle,
+    Eye,
+    Trash2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
@@ -267,10 +276,10 @@ const CategoryList = () => {
                                                 <ActionIcon onClick={() => handleEditCategory(category)} icon={<Edit3 size={16} />} label="Edit Category" theme="emerald" />
                                                 <ActionIcon
                                                     onClick={() => handleToggleStatus(category)}
-                                                    icon={<Ban size={16} />}
+                                                    icon={<Trash2 size={16} />}
                                                     label="Deactivate Category"
                                                     theme="rose"
-                                                />                                            </>
+                                                /> </>
                                         ) : (
                                             <button
                                                 onClick={() => handleToggleStatus(category)}
