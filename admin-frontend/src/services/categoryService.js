@@ -6,16 +6,14 @@ export const categoryService = {
         return response.data;
     },
 
-    addCategory: async (formData) => {
-        const response = await axiosInstance.post('/category', formData);
-        return response.data;
-    },
+  addCategory: async (formData) => {
+    return await axiosInstance.post('/category', formData);
+},
 
-    updateCategory: async (id, formData) => {
-        const response = await axiosInstance.put(`/category/${id}`, formData);
-        return response.data;
-    },
 
+updateCategory: async (id, formData) => {
+    return await axiosInstance.put(`/category/${id}`, formData);
+},
     // Deactivate Category (Maps to DELETE route)
     deactivateCategory: async (id) => {
         const response = await axiosInstance.delete(`/category/${id}`);

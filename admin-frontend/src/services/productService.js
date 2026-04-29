@@ -1,40 +1,53 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
 export const productService = {
-    /**
-     * Fetches all products
-     */
-    getProductList: async () => {
-        try {
-            const response = await axiosInstance.get('/product-list');
-            return response.data; 
-        } catch (error) {
-            console.error("Service Error:", error);
-            throw error;
-        }
-    },
+  // Get Product List
+  getProductList: async (search = "") => {
+    const response = await axiosInstance.get("/list-productdetails", {
+      params: { search },
+    });
+    return response.data;
+  },
 
-    /**
-     * Update product details (including image via FormData)
-     */
-    updateProduct: async (id, formData) => {
-        const response = await axiosInstance.put(`/product/${id}`, formData);
-        return response.data;
-    },
+  // Add Product
+  addProduct: async (formData) => {
+    const response = await axiosInstance.post("/product", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
 
-    /**
-     * Deactivate product (Sets status to 0)
-     */
-    deactivateProduct: async (id) => {
-        const response = await axiosInstance.delete(`/product/${id}`);
-        return response.data;
-    },
+  // Update Product
+  updateProduct: async (id, formData) => {
+    const response = await axiosInstance.put(`/product/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
 
-    /**
-     * Reactivate product (Sets status to 1)
-     */
-    reactivateProduct: async (id) => {
-        const response = await axiosInstance.put(`/product/reactivate/${id}`);
-        return response.data;
-    }
+  // Delete Product
+  deleteProduct: async (id) => {
+    const response = await axiosInstance.delete(`/product/${id}`);
+    return response.data;
+  },
+
+  // Upload Product Image
+  uploadImage: async (formData) => {
+    const response = await axiosInstance.post(
+      "/upload-photos",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
 };
+
+export default productService;

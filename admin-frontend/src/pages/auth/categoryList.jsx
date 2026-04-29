@@ -120,51 +120,41 @@ const CategoryList = () => {
         resetForm();
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            setSubmitting(true);
+ const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        setSubmitting(true);
 
-            let imageName = editingCategory?.image || null;
+        const formData = new FormData();
 
-            // Step 1: Upload image if a new file is selected
-            if (selectedFile) {
-                const uploadData = new FormData();
-                uploadData.append("image", selectedFile);
-                const uploadRes = await categoryService.uploadImage(uploadData);
-                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
-                    imageName = uploadRes.data[0];
-                }
-            }
+        formData.append("name", name);
+        formData.append("description", description);
 
-            // Step 2: Prepare JSON data
-            const categoryData = {
-                name,
-                description,
-                image: imageName
-            };
-
-            if (isSubcategoryModalOpen && selectedCategoryId) {
-                categoryData.categoryId = selectedCategoryId;
-                await categoryService.addCategory(categoryData);
-                toast.success("Subcategory added successfully");
-            } else if (editingCategory) {
-                await categoryService.updateCategory(editingCategory._id, categoryData);
-                toast.success("Category updated successfully");
-            } else {
-                await categoryService.addCategory(categoryData);
-                toast.success("New category created successfully");
-            }
-
-            handleCloseModal();
-            fetchCategories();
-        } catch (error) {
-            console.error("Submit Error:", error);
-            toast.error(error.response?.data?.message || "Operation failed");
-        } finally {
-            setSubmitting(false);
+        if (selectedCategoryId && isSubcategoryModalOpen) {
+            formData.append("categoryId", selectedCategoryId);
         }
-    };
+
+        if (selectedFile) {
+            formData.append("image", selectedFile);
+        }
+
+        if (editingCategory) {
+            await categoryService.updateCategory(editingCategory._id, formData);
+            toast.success("Category updated successfully");
+        } else {
+            await categoryService.addCategory(formData);
+            toast.success("Category created successfully");
+        }
+
+        handleCloseModal();
+        fetchCategories();
+    } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Operation failed");
+    } finally {
+        setSubmitting(false);
+    }
+};
 
     return (
         <div className="premium-page">

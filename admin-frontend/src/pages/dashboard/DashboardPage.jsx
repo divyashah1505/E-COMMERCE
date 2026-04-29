@@ -88,9 +88,8 @@ const StatCard = ({
 
           {trend && (
             <span
-              className={`flex items-center text-[11px] font-bold ${
-                isPositive ? 'text-emerald-500' : 'text-rose-500'
-              }`}
+              className={`flex items-center text-[11px] font-bold ${isPositive ? 'text-emerald-500' : 'text-rose-500'
+                }`}
             >
               {isPositive ? (
                 <ArrowUpRight size={12} className="mr-0.5" />
@@ -154,8 +153,8 @@ const DashboardPage = () => {
       const categories = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response)
-        ? response
-        : [];
+          ? response
+          : [];
 
       setTotalCategories(categories.length.toLocaleString());
     } catch (error) {
@@ -172,8 +171,8 @@ const DashboardPage = () => {
       const products = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response)
-        ? response
-        : [];
+          ? response
+          : [];
 
       setTotalProducts(products.length.toLocaleString());
     } catch (error) {
@@ -190,10 +189,10 @@ const DashboardPage = () => {
       const promoCodes = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response?.promoCodes)
-        ? response.promoCodes
-        : Array.isArray(response)
-        ? response
-        : [];
+          ? response.promoCodes
+          : Array.isArray(response)
+            ? response
+            : [];
 
       setTotalPromoCodes(promoCodes.length.toLocaleString());
     } catch (error) {
@@ -266,8 +265,15 @@ const DashboardPage = () => {
                 <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                      <Area
+                        type="monotone"
+                        dataKey="current"
+                        stroke="#6366F1"
+                        strokeWidth={3}
+                        fill="url(#chartGradient)"
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid vertical={false} stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeDasharray="3 3" />
