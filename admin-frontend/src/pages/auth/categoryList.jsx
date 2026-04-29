@@ -9,7 +9,7 @@ import { PATHS } from "../../routes/routePaths";
 import { categoryService } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL 
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const CategoryList = () => {
     const navigate = useNavigate();
@@ -115,7 +115,7 @@ const CategoryList = () => {
         e.preventDefault();
         try {
             setSubmitting(true);
-            
+
             let imageName = editingCategory?.image || null;
 
             // Step 1: Upload image if a new file is selected
@@ -221,8 +221,7 @@ const CategoryList = () => {
                                         <div className="h-16 w-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-white/10 transition-all">
                                             {category.image ? (
                                                 <img
-                                                    src={`${IMAGE_BASE_URL}/${category.image}`}
-                                                    alt={category.name}
+                                                    src={`${IMAGE_BASE_URL}/${category.image}`} 
                                                     className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
