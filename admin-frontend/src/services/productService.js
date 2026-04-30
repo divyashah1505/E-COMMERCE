@@ -11,21 +11,13 @@ export const productService = {
 
   // Add Product
   addProduct: async (formData) => {
-    const response = await axiosInstance.post("/product", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.post("/product", formData);
     return response.data;
   },
 
   // Update Product
   updateProduct: async (id, formData) => {
-    const response = await axiosInstance.put(`/product/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.put(`/product/${id}`, formData);
     return response.data;
   },
 
@@ -37,15 +29,7 @@ export const productService = {
 
   // Upload Product Image
   uploadImage: async (formData) => {
-    const response = await axiosInstance.post(
-      "/upload-photos",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await axiosInstance.post("/upload-photos", formData);
     return response.data;
   },
 };

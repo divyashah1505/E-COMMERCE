@@ -13,11 +13,7 @@ export const categoryService = {
     // CATEGORY (MULTIPART FIXED)
     // =========================
     addCategory: async (formData) => {
-        return await axiosInstance.post('/category', formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        });
+        return await axiosInstance.post('/category', formData);
     },
 
     updateCategory: async (id, formData) => {
