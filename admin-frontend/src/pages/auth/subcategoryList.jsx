@@ -15,6 +15,7 @@ const SubcategoryList = () => {
     const navigate = useNavigate();
     const { categoryId } = useParams();
     const fileInputRef = useRef(null);
+    const productFileRef = useRef(null);
 
     const [subcategories, setSubcategories] = useState([]);
     const [parentCategory, setParentCategory] = useState(null);
@@ -38,17 +39,22 @@ const SubcategoryList = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
+
             const res = await categoryService.getCategoryList();
             const allCats = res.data || [];
-            const currentParent = allCats.find(c => String(c._id) === String(categoryId));
 
-            if (currentParent) {
-                setParentCategory(currentParent);
-                setSubcategories(currentParent.subcategories || []);
-            } else {
+            const currentParent = allCats.find(
+                c => String(c._id) === String(categoryId)
+            );
+
+            if (!currentParent) {
                 toast.error("Category context not found");
                 navigate(PATHS.CATEGORIES);
+                return;
             }
+
+            setParentCategory(currentParent);
+            setSubcategories(currentParent.subcategories || []);
         } catch (error) {
             toast.error("Failed to sync subcategories");
         } finally {
@@ -72,32 +78,35 @@ const SubcategoryList = () => {
             if (sub.status === 1) {
                 await categoryService.deactivateCategory(sub._id);
                 toast.success(`${sub.name} Deactivated`);
-                setSubcategories(prev => prev.map(item =>
-                    item._id === sub._id ? { ...item, status: 0 } : item
-                ));
             } else {
                 await categoryService.reactivateCategory(sub._id);
                 toast.success(`${sub.name} Reactivated`);
-                setSubcategories(prev => prev.map(item =>
-                    item._id === sub._id ? { ...item, status: 1 } : item
-                ));
             }
-        } catch (error) {
+
+            setSubcategories(prev =>
+                prev.map(item =>
+                    item._id === sub._id
+                        ? { ...item, status: item.status === 1 ? 0 : 1 }
+                        : item
+                )
+            );
+        } catch {
             toast.error("Action failed");
         }
+    };
+
+    const getImageUrl = (img) => {
+        if (!img) return null;
+        if (img.startsWith("http")) return img;
+        return `${IMAGE_BASE_URL}/${img}`;
     };
 
     const handleEditSubcategory = (subcategory) => {
         setEditingSubcategory(subcategory);
         setName(subcategory.name);
         setDescription(subcategory.description || "");
-        setPreviewUrl(
-            subcategory.image
-                ? (subcategory.image.startsWith("http")
-                    ? subcategory.image
-                    : `${IMAGE_BASE_URL}/${subcategory.image}`)
-                : null
-        ); setIsModalOpen(true);
+        setPreviewUrl(getImageUrl(subcategory.image));
+        setIsModalOpen(true);
     };
 
     const handleOpenProductModal = (subId) => {
@@ -167,7 +176,6 @@ const SubcategoryList = () => {
     const handleProductSubmit = async (e) => {
         e.preventDefault();
 
-        // VALIDATION
         if (Number(price) < 0) return toast.error("Price cannot be negative");
         if (Number(qty) < 0) return toast.error("Stock quantity cannot be negative");
         if (!selectedFile) return toast.error("Please upload a product image");
@@ -175,19 +183,17 @@ const SubcategoryList = () => {
         try {
             setSubmitting(true);
 
-            // Step 1: Upload Product Image
             const uploadData = new FormData();
             uploadData.append("image", selectedFile);
+
             const uploadRes = await categoryService.uploadImage(uploadData);
 
-            let uploadedImageName = null;
-            if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
-                uploadedImageName = uploadRes.data[0];
-            } else {
+            const uploadedImageName = uploadRes?.data?.[0];
+
+            if (!uploadedImageName) {
                 throw new Error("Image upload failed");
             }
 
-            // Step 2: Send Product Data as JSON
             const productData = {
                 name,
                 description,
@@ -198,11 +204,12 @@ const SubcategoryList = () => {
             };
 
             await categoryService.addProduct(productData);
+
             toast.success("Product added successfully");
             handleCloseModal();
         } catch (error) {
             console.error("Product Submit Error:", error);
-            toast.error(error.response?.data?.message || "Product creation failed");
+            toast.error(error?.response?.data?.message || "Product creation failed");
         } finally {
             setSubmitting(false);
         }
@@ -275,7 +282,7 @@ const SubcategoryList = () => {
                                     <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10">
                                         {sub.image ? (
                                             <img
-                                                src={`${IMAGE_BASE_URL}/${sub.image}`}
+                                                src={getImageUrl(sub.image)}
                                                 alt={sub.name}
                                                 className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
@@ -437,7 +444,7 @@ const SubcategoryList = () => {
                                 <div className="flex flex-col">
                                     <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Image</label>
                                     <div
-                                        onClick={() => fileInputRef.current.click()}
+                                        onClick={() => productFileRef.current.click()}
                                         className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-[260px]"
                                     >
                                         {previewUrl ? (
@@ -449,7 +456,7 @@ const SubcategoryList = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                                    <input type="file" ref={productFileRef} className="hidden" accept="image/*" onChange={handleFileChange} />
                                 </div>
                             </div>
 
