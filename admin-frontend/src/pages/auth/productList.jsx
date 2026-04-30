@@ -34,6 +34,7 @@ const ProductList = () => {
     const [qty, setQty] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [activeLightboxImage, setActiveLightboxImage] = useState(null); // Lightbox state
 
     /**
      * Helper to resolve image URLs (handles absolute and relative paths)
@@ -240,9 +241,17 @@ const handleSubmit = async (e) => {
                                 className={`group grid grid-cols-12 gap-6 items-center p-6 premium-card ${product.status === 0 ? 'opacity-75 grayscale-[0.4]' : ''}`}
                             >
                                 <div className="col-span-5 flex items-center gap-8">
-                                    <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 transition-all">
+                                    <div 
+                                        onClick={() => setActiveLightboxImage(getImageUrl(product.image))}
+                                        className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 cursor-zoom-in group/img relative transition-all"
+                                    >
                                         {product.image ? (
-                                            <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <>
+                                                <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <Search className="text-white" size={20} />
+                                                </div>
+                                            </>
                                         ) : (
                                             <ImageIcon className="text-slate-200" size={36} />
                                         )}
@@ -365,6 +374,26 @@ const handleSubmit = async (e) => {
                             </button>
                         </form>
                     </div>
+                </div>
+            )}
+            {/* Image Lightbox */}
+            {activeLightboxImage && (
+                <div 
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm animate-in fade-in duration-300"
+                    onClick={() => setActiveLightboxImage(null)}
+                >
+                    <button 
+                        className="absolute top-8 right-8 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+                        onClick={() => setActiveLightboxImage(null)}
+                    >
+                        <X size={32} />
+                    </button>
+                    <img 
+                        src={activeLightboxImage} 
+                        className="max-w-full max-h-[90vh] rounded-3xl shadow-2xl object-contain animate-in zoom-in-95 duration-300"
+                        alt="Preview"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                 </div>
             )}
         </div>
