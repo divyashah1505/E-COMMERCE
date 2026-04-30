@@ -3,7 +3,7 @@ import axiosInstance from "./axiosInstance";
 export const productService = {
   // Get Product List
   getProductList: async (search = "") => {
-    const response = await axiosInstance.get("/list-productsdetails", {
+    const response = await axiosInstance.get("/product-list", {
       params: { search },
     });
     return response.data;

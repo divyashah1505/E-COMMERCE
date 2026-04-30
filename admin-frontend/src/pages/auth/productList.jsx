@@ -36,6 +36,15 @@ const ProductList = () => {
     const [previewUrl, setPreviewUrl] = useState(null);
 
     /**
+     * Helper to resolve image URLs (handles absolute and relative paths)
+     */
+    const getImageUrl = (img) => {
+        if (!img) return null;
+        if (img.startsWith("http")) return img;
+        return `${IMAGE_BASE_URL}/${img}`;
+    };
+
+    /**
      * Fetches the master product list and filters by subcategory
      */
     const fetchProducts = async () => {
@@ -45,14 +54,15 @@ const ProductList = () => {
             const productsArray = res.data || [];
             setAllProducts(productsArray);
 
-            const firstMatch = productsArray.find(p =>
-                p.subcategory && String(p.subcategory._id) === String(subcategoryId)
-            );
+            const firstMatch = productsArray.find(p => {
+                const subId = p.subcategory?._id || p.subcategory;
+                return String(subId) === String(subcategoryId);
+            });
 
             if (firstMatch) {
-                setSubName(firstMatch.subcategory.name);
+                setSubName(firstMatch.subcategory?.name || "Registry Node");
             } else {
-                setSubName("Registry Node");
+                setSubName("Inventory Cluster");
             }
         } catch (error) {
             console.error("Fetch Error:", error);
@@ -71,7 +81,9 @@ const ProductList = () => {
      */
     const filteredProducts = useMemo(() => {
         return allProducts.filter(product => {
-            const matchesSub = product.subcategory && String(product.subcategory._id) === String(subcategoryId);
+            const subId = product.subcategory?._id || product.subcategory;
+            const matchesSub = String(subId) === String(subcategoryId);
+            
             const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
             return matchesSub && matchesSearch;
@@ -102,7 +114,7 @@ const ProductList = () => {
         setDescription(product.description || "");
         setPrice(product.price);
         setQty(product.qty);
-        setPreviewUrl(product.image ? `${IMAGE_BASE_URL}/${product.image}` : null);
+        setPreviewUrl(getImageUrl(product.image));
         setIsEditModalOpen(true);
     };
 
@@ -230,7 +242,7 @@ const handleSubmit = async (e) => {
                                 <div className="col-span-5 flex items-center gap-8">
                                     <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 transition-all">
                                         {product.image ? (
-                                            <img src={`${IMAGE_BASE_URL}/${product.image}`} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                         ) : (
                                             <ImageIcon className="text-slate-200" size={36} />
                                         )}
