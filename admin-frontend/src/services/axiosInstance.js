@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
   timeout: 30000,
   headers: {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
   },
 });
 
@@ -23,8 +22,18 @@ axiosInstance.interceptors.request.use(
     // When sending FormData (file uploads), remove the default JSON
     // Content-Type so axios can auto-set multipart/form-data with
     // the correct boundary string.
-    if (config.data instanceof FormData) {
-      delete config.headers['Content-Type'];
+    const isFormData = config.data instanceof FormData || (config.data && typeof config.data.append === 'function');
+    
+    if (isFormData) {
+      if (config.headers.delete) {
+        config.headers.delete('Content-Type');
+        config.headers.delete('content-type');
+      } else if (config.headers) {
+        delete config.headers['Content-Type'];
+        delete config.headers['content-type'];
+      }
+    } else if (config.data && !config.headers['Content-Type'] && !config.headers['content-type']) {
+      config.headers['Content-Type'] = 'application/json';
     }
 
     return config;
