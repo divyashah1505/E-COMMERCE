@@ -16,13 +16,9 @@ export const categoryService = {
         return await axiosInstance.post('/category', formData);
     },
 
-    updateCategory: async (id, formData) => {
-        return await axiosInstance.put(`/category/${id}`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        });
-    },
+  updateCategory: async (id, formData) => {
+    return await axiosInstance.put(`/category/${id}`, formData);
+},
 
     // =========================
     // STATUS
@@ -48,11 +44,7 @@ export const categoryService = {
     // =========================
     // IMAGE UPLOAD (MULTIPART FIXED)
     // =========================
-    uploadImage: async (formData) => {
-        return await axiosInstance.post('/upload-photos', formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        });
-    }
+ uploadImage: async (formData) => {
+    return await axiosInstance.post('/upload-photos', formData);
+}
 };

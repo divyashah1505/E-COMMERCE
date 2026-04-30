@@ -125,45 +125,56 @@ const ProductList = () => {
         setPreviewUrl(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (Number(price) < 0 || Number(qty) < 0) return toast.error("Values cannot be negative");
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            setSubmitting(true);
-            
-            let imageName = editingProduct?.image || null;
+    if (Number(price) < 0 || Number(qty) < 0)
+        return toast.error("Values cannot be negative");
 
-            // Step 1: Upload image if a new file is selected
-            if (selectedFile) {
-                const uploadData = new FormData();
-                uploadData.append("image", selectedFile);
-                const uploadRes = await categoryService.uploadImage(uploadData);
-                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
-                    imageName = uploadRes.data[0];
-                }
+    try {
+        setSubmitting(true);
+
+        let imageName = editingProduct?.image || null;
+
+        // Step 1: Upload image if new file selected
+        if (selectedFile) {
+            const uploadData = new FormData();
+            uploadData.append("image", selectedFile);
+
+            const uploadRes = await categoryService.uploadImage(uploadData);
+            const result = uploadRes.data;
+
+            if (result.success && result.data?.length > 0) {
+                imageName = result.data[0];
             }
-
-            // Step 2: Prepare JSON data
-            const productData = {
-                name,
-                description,
-                price: Number(price),
-                qty: Number(qty),
-                image: imageName
-            };
-
-            await productService.updateProduct(editingProduct._id, productData);
-            toast.success("Product updated successfully");
-            handleCloseModal();
-            fetchProducts();
-        } catch (error) {
-            console.error("Product Update Error:", error);
-            toast.error(error.response?.data?.message || "Update failed");
-        } finally {
-            setSubmitting(false);
         }
-    };
+
+        // Step 2: Prepare update payload (IMPORTANT: JSON now, not FormData)
+        const productData = {
+            name,
+            description,
+            price: Number(price),
+            qty: Number(qty),
+            image: imageName
+        };
+
+        // Step 3: Update product
+        await productService.updateProduct(
+            editingProduct._id,
+            productData
+        );
+
+        toast.success("Product updated successfully");
+        handleCloseModal();
+        fetchProducts();
+
+    } catch (error) {
+        console.error("Product Update Error:", error);
+        toast.error(error.response?.data?.message || "Update failed");
+    } finally {
+        setSubmitting(false);
+    }
+};
 
     return (
         <div className="premium-page">

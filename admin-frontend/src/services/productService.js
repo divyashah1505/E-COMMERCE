@@ -16,10 +16,18 @@ export const productService = {
   },
 
   // Update Product
-  updateProduct: async (id, formData) => {
-    const response = await axiosInstance.put(`/product/${id}`, formData);
+ updateProduct: async (id, formData) => {
+    const response = await axiosInstance.put(
+        `/product/${id}`,
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        }
+    );
     return response.data;
-  },
+},
 
   // Delete Product
   deleteProduct: async (id) => {
