@@ -9,7 +9,7 @@ import { PATHS } from "../../routes/routePaths";
 import { categoryService } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL ;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
 
 const SubcategoryList = () => {
     const navigate = useNavigate();
@@ -91,8 +91,13 @@ const SubcategoryList = () => {
         setEditingSubcategory(subcategory);
         setName(subcategory.name);
         setDescription(subcategory.description || "");
-        setPreviewUrl(subcategory.image ? `${subcategory.image}` : null);
-        setIsModalOpen(true);
+        setPreviewUrl(
+            subcategory.image
+                ? (subcategory.image.startsWith("http")
+                    ? subcategory.image
+                    : `${IMAGE_BASE_URL}/${subcategory.image}`)
+                : null
+        ); setIsModalOpen(true);
     };
 
     const handleOpenProductModal = (subId) => {
@@ -131,7 +136,7 @@ const SubcategoryList = () => {
         e.preventDefault();
         try {
             setSubmitting(true);
-            
+
             let imageName = editingSubcategory?.image || null;
 
             // Step 1: Upload image if a new file is selected
@@ -185,7 +190,7 @@ const SubcategoryList = () => {
             const uploadData = new FormData();
             uploadData.append("image", selectedFile);
             const uploadRes = await categoryService.uploadImage(uploadData);
-            
+
             let uploadedImageName = null;
             if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
                 uploadedImageName = uploadRes.data[0];
