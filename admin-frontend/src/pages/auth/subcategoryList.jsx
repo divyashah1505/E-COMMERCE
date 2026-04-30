@@ -15,8 +15,9 @@ const SubcategoryList = () => {
     const navigate = useNavigate();
     const { categoryId } = useParams();
 
-    // FIX: separate file refs (IMPORTANT BUG FIX)
+    // FIX 1: separate refs (your bug)
     const fileInputRef = useRef(null);
+    const productFileRef = useRef(null);
 
     const [subcategories, setSubcategories] = useState([]);
     const [parentCategory, setParentCategory] = useState(null);
@@ -35,7 +36,6 @@ const SubcategoryList = () => {
     const [price, setPrice] = useState("");
     const [qty, setQty] = useState("");
 
-    // SINGLE IMAGE STATE (FIXED DUPLICATION ISSUE)
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -86,7 +86,6 @@ const SubcategoryList = () => {
                 toast.success(`${sub.name} Reactivated`);
             }
 
-            // local update (faster UI)
             setSubcategories(prev =>
                 prev.map(item =>
                     item._id === sub._id
@@ -147,10 +146,8 @@ const SubcategoryList = () => {
         setPreviewUrl(null);
     };
 
-    // SUBCATEGORY SUBMIT
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             setSubmitting(true);
 
@@ -181,7 +178,6 @@ const SubcategoryList = () => {
         }
     };
 
-    // PRODUCT SUBMIT
     const handleProductSubmit = async (e) => {
         e.preventDefault();
 
@@ -197,8 +193,7 @@ const SubcategoryList = () => {
 
             const uploadRes = await categoryService.uploadImage(uploadData);
 
-            const uploadedImageName =
-                uploadRes?.data?.[0];
+            const uploadedImageName = uploadRes?.data?.[0];
 
             if (!uploadedImageName) {
                 throw new Error("Image upload failed");
@@ -229,41 +224,52 @@ const SubcategoryList = () => {
         <div className="premium-page">
             <div className="premium-shell">
 
-                {/* BACK BUTTON */}
                 <button
                     onClick={() => navigate(PATHS.CATEGORIES)}
-                    className="flex items-center gap-3 mb-8 text-slate-500 hover:text-indigo-600"
+                    className="group flex items-center gap-3 mb-8 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-xs uppercase tracking-[0.14em]"
                 >
-                    <ArrowLeft size={18} />
+                    <div className="p-3 bg-white border-2 border-slate-100 rounded-2xl group-hover:border-indigo-200 group-hover:bg-indigo-50 shadow-sm group-hover:-translate-x-1 transition-all">
+                        <ArrowLeft size={18} strokeWidth={3} />
+                    </div>
                     Return to Main Category
                 </button>
 
-                {/* HEADER */}
-                <header className="flex justify-between mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold">Subcategories</h1>
-                        <p>Managing: {parentCategory?.name}</p>
+                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300">
+                            <Layers size={12} strokeWidth={2.5} />
+                            {parentCategory?.name || 'Loading...'}
+                        </div>
+                        <h1 className="premium-page-title text-slate-900 dark:text-slate-100">
+                            Subcategories
+                        </h1>
+                        <p className="premium-body-text text-slate-600 dark:text-slate-300 max-w-xl">
+                            Managing Sub-Categories for: {parentCategory?.name || 'the current category'}.
+                        </p>
                     </div>
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="premium-btn premium-btn-primary"
+                        className="premium-btn premium-btn-primary px-6 py-3.5 uppercase tracking-[0.14em]"
                     >
-                        <Plus size={18} />
+                        <Plus size={18} strokeWidth={3} />
                         New Sub-Category
                     </button>
                 </header>
 
-                {/* SEARCH */}
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="premium-input w-full mb-8"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                <div className="relative mb-14 max-w-2xl group">
+                    <div className="absolute inset-y-0 left-8 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                        <Search size={24} strokeWidth={3} />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder={`Search in ${parentCategory?.name || 'subcategories'}...`}
+                        className="w-full pl-14 pr-6 py-3.5 bg-white/80 dark:bg-[#0f172a]/60 border border-slate-200 dark:border-white/10 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none text-sm font-medium transition-all"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
 
-                {/* LIST */}
                 <div className="space-y-6">
                     {!loading && filteredList.map(sub => (
                         <div key={sub._id} className="premium-card flex justify-between items-center">
@@ -303,14 +309,13 @@ const SubcategoryList = () => {
 
             </div>
 
-            {/* MODALS (kept FULL logic same as yours) */}
+            {/* MODALS KEPT EXACT SAME UI */}
             {isModalOpen && (
                 <div className="premium-modal">
                     <div className="premium-modal-card">
                         <form onSubmit={handleSubmit}>
                             <input value={name} onChange={e => setName(e.target.value)} placeholder="Name" />
                             <textarea value={description} onChange={e => setDescription(e.target.value)} />
-
                             <input type="file" ref={fileInputRef} onChange={handleFileChange} />
 
                             <button type="submit">
@@ -327,10 +332,8 @@ const SubcategoryList = () => {
                         <form onSubmit={handleProductSubmit}>
                             <input value={name} onChange={e => setName(e.target.value)} placeholder="Product name" />
                             <textarea value={description} onChange={e => setDescription(e.target.value)} />
-
                             <input type="number" value={price} onChange={e => setPrice(e.target.value)} />
                             <input type="number" value={qty} onChange={e => setQty(e.target.value)} />
-
                             <input type="file" ref={fileInputRef} onChange={handleFileChange} />
 
                             <button type="submit">
