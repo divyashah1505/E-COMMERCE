@@ -132,48 +132,37 @@ const SubcategoryList = () => {
         setPreviewUrl(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            setSubmitting(true);
+ const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        setSubmitting(true);
 
-            let imageName = editingSubcategory?.image || null;
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("categoryId", categoryId);
 
-            // Step 1: Upload image if a new file is selected
-            if (selectedFile) {
-                const uploadData = new FormData();
-                uploadData.append("image", selectedFile);
-                const uploadRes = await categoryService.uploadImage(uploadData);
-                if (uploadRes.success && uploadRes.data && uploadRes.data.length > 0) {
-                    imageName = uploadRes.data[0];
-                }
-            }
-
-            // Step 2: Prepare JSON data
-            const subcategoryData = {
-                name,
-                description,
-                image: imageName
-            };
-
-            if (editingSubcategory) {
-                await categoryService.updateCategory(editingSubcategory._id, subcategoryData);
-                toast.success("Subcategory updated successfully");
-            } else {
-                subcategoryData.categoryId = categoryId;
-                await categoryService.addCategory(subcategoryData);
-                toast.success("Subcategory added successfully");
-            }
-
-            handleCloseModal();
-            fetchData();
-        } catch (error) {
-            console.error("Subcategory Submit Error:", error);
-            toast.error("Operation failed");
-        } finally {
-            setSubmitting(false);
+        if (selectedFile) {
+            formData.append("image", selectedFile);
         }
-    };
+
+        if (editingSubcategory) {
+            await categoryService.updateCategory(editingSubcategory._id, formData);
+            toast.success("Subcategory updated successfully");
+        } else {
+            await categoryService.addCategory(formData);
+            toast.success("Subcategory added successfully");
+        }
+
+        handleCloseModal();
+        fetchData();
+    } catch (error) {
+        console.error(error);
+        toast.error("Operation failed");
+    } finally {
+        setSubmitting(false);
+    }
+};
 
     const handleProductSubmit = async (e) => {
         e.preventDefault();

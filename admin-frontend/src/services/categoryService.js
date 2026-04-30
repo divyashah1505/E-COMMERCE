@@ -1,40 +1,62 @@
 import axiosInstance from './axiosInstance';
 
 export const categoryService = {
+
     getCategoryList: async (search = "") => {
-        const response = await axiosInstance.get('/list-categoriesdetails', { params: { search } });
+        const response = await axiosInstance.get('/list-categoriesdetails', {
+            params: { search }
+        });
         return response.data;
     },
 
-  addCategory: async (formData) => {
-    return await axiosInstance.post('/category', formData);
-},
+    // =========================
+    // CATEGORY (MULTIPART FIXED)
+    // =========================
+    addCategory: async (formData) => {
+        return await axiosInstance.post('/category', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+    },
 
+    updateCategory: async (id, formData) => {
+        return await axiosInstance.put(`/category/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+    },
 
-updateCategory: async (id, formData) => {
-    return await axiosInstance.put(`/category/${id}`, formData);
-},
-    // Deactivate Category (Maps to DELETE route)
+    // =========================
+    // STATUS
+    // =========================
     deactivateCategory: async (id) => {
         const response = await axiosInstance.delete(`/category/${id}`);
         return response.data;
     },
 
-    // Reactivate Category (Maps to PUT reactivate route)
     reactivateCategory: async (id) => {
         const response = await axiosInstance.put(`/category/reactivate/${id}`);
         return response.data;
     },
 
-    // Product Service integration for Subcategory page
+    // =========================
+    // PRODUCT (JSON OK)
+    // =========================
     addProduct: async (productData) => {
         const response = await axiosInstance.post('/product', productData);
         return response.data;
     },
 
-    // Generic Image Upload (Two-step process)
+    // =========================
+    // IMAGE UPLOAD (MULTIPART FIXED)
+    // =========================
     uploadImage: async (formData) => {
-        const response = await axiosInstance.post('/upload-photos', formData);
-        return response.data;
+        return await axiosInstance.post('/upload-photos', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
     }
 };
