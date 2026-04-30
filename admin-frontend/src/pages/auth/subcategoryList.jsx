@@ -174,12 +174,10 @@ const SubcategoryList = () => {
     }
 };
 
- const handleProductSubmit = async (e) => {
+const handleProductSubmit = async (e) => {
     e.preventDefault();
 
-    if (Number(price) < 0) return toast.error("Price cannot be negative");
-    if (Number(qty) < 0) return toast.error("Stock quantity cannot be negative");
-    if (!selectedFile) return toast.error("Please upload a product image");
+    if (!selectedFile) return toast.error("Image required");
 
     try {
         setSubmitting(true);
@@ -190,24 +188,26 @@ const SubcategoryList = () => {
         formData.append("description", description);
         formData.append("price", price);
         formData.append("qty", qty);
-        formData.append("categoryId", categoryId);       // ✅ FIX
-        formData.append("subcategoryId", selectedSubId); // ✅ FIX
-        formData.append("image", selectedFile);          // ✅ DIRECT UPLOAD
+
+        // 🔥 IMPORTANT FIX
+        formData.append("categoryId", selectedSubId);
+
+        formData.append("image", selectedFile);
 
         await categoryService.addProduct(formData);
 
         toast.success("Product added successfully");
+
         handleCloseModal();
         fetchData();
 
     } catch (error) {
-        console.error("Product Submit Error:", error);
-        toast.error(error?.response?.data?.message || "Product creation failed");
+        console.error(error);
+        toast.error(error?.response?.data?.message || "Failed");
     } finally {
         setSubmitting(false);
     }
 };
-
     return (
         <div className="premium-page">
             <div className="premium-shell">
