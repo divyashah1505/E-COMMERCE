@@ -10,7 +10,7 @@ import { productService } from "../../services/productService";
 import { categoryService } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL ;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
 
 const ProductList = () => {
     const navigate = useNavigate();
@@ -125,56 +125,55 @@ const ProductList = () => {
         setPreviewUrl(null);
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (Number(price) < 0 || Number(qty) < 0)
-        return toast.error("Values cannot be negative");
+        if (Number(price) < 0 || Number(qty) < 0)
+            return toast.error("Values cannot be negative");
 
-    try {
-        setSubmitting(true);
+        try {
+            setSubmitting(true);
 
-        let imageName = editingProduct?.image || null;
+            const formData = new FormData();
 
-        // Step 1: Upload image if new file selected
-        if (selectedFile) {
-            const uploadData = new FormData();
-            uploadData.append("image", selectedFile);
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("price", price);
+            formData.append("qty", qty);
 
-            const uploadRes = await categoryService.uploadImage(uploadData);
-            const result = uploadRes.data;
+            // ✅ IMPORTANT
+            formData.append(
+                "categoryId",
+                editingProduct ? editingProduct.categoryId : subcategoryId
+            );
 
-            if (result.success && result.data?.length > 0) {
-                imageName = result.data[0];
+            if (selectedFile) {
+                formData.append("image", selectedFile);
             }
+
+            if (editingProduct) {
+                // 🔵 UPDATE
+                await productService.updateProduct(
+                    editingProduct._id,
+                    formData
+                );
+                toast.success("Product updated successfully");
+            } else {
+                // 🟢 ADD
+                await productService.addProduct(formData);
+                toast.success("Product added successfully");
+            }
+
+            handleCloseModal();
+            fetchProducts();
+
+        } catch (error) {
+            console.error("Product Error:", error);
+            toast.error(error.response?.data?.message || "Operation failed");
+        } finally {
+            setSubmitting(false);
         }
-
-        // Step 2: Prepare update payload (IMPORTANT: JSON now, not FormData)
-        const productData = {
-            name,
-            description,
-            price: Number(price),
-            qty: Number(qty),
-            image: imageName
-        };
-
-        // Step 3: Update product
-        await productService.updateProduct(
-            editingProduct._id,
-            productData
-        );
-
-        toast.success("Product updated successfully");
-        handleCloseModal();
-        fetchProducts();
-
-    } catch (error) {
-        console.error("Product Update Error:", error);
-        toast.error(error.response?.data?.message || "Update failed");
-    } finally {
-        setSubmitting(false);
-    }
-};
+    };
 
     return (
         <div className="premium-page">
@@ -203,6 +202,15 @@ const handleSubmit = async (e) => {
                             Managing products for subcategory: <span className="text-indigo-600 font-semibold">{subName}</span>
                         </p>
                     </div>
+                    <button
+                        onClick={() => {
+                            setEditingProduct(null); // 🔥 important
+                            setIsEditModalOpen(true);
+                        }}
+                        className="premium-btn premium-btn-primary"
+                    >
+                        + Add Product
+                    </button>
                 </header>
 
                 <div className="relative mb-14 max-w-2xl group">
