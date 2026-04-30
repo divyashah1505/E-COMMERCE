@@ -7,6 +7,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
 import { categoryService } from "../../services/categoryService";
+import { productService } from "../../services/productService";
 import toast from "react-hot-toast";
 
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
@@ -18,6 +19,7 @@ const SubcategoryList = () => {
     const productFileRef = useRef(null);
 
     const [subcategories, setSubcategories] = useState([]);
+    const [allProducts, setAllProducts] = useState([]); 
     const [parentCategory, setParentCategory] = useState(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +43,7 @@ const SubcategoryList = () => {
         try {
             setLoading(true);
 
+            // 1. Fetch categories first
             const res = await categoryService.getCategoryList();
             const allCats = res.data || [];
 
@@ -56,6 +59,14 @@ const SubcategoryList = () => {
 
             setParentCategory(currentParent);
             setSubcategories(currentParent.subcategories || []);
+
+            // 2. Fetch products in background for counts
+            try {
+                const prodRes = await productService.getProductList();
+                setAllProducts(prodRes.data || []);
+            } catch (err) {
+                console.warn("Product count fetch failed:", err);
+            }
         } catch (error) {
             toast.error("Failed to sync subcategories");
         } finally {
@@ -95,6 +106,13 @@ const SubcategoryList = () => {
         } catch {
             toast.error("Action failed");
         }
+    };
+
+    const getProductCount = (subId) => {
+        return allProducts.filter(p => {
+            const pSubId = p.subcategory?._id || p.subcategory;
+            return String(pSubId) === String(subId);
+        }).length;
     };
 
     const getImageUrl = (img) => {
@@ -260,7 +278,8 @@ const SubcategoryList = () => {
 
                 <div className="relative">
                     <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 premium-table-head">
-                        <div className="col-span-7">SubCategory Identity</div>
+                        <div className="col-span-5">SubCategory Identity</div>
+                        <div className="col-span-2 text-center">Inventory</div>
                         <div className="col-span-2 text-center">Status</div>
                         <div className="col-span-3 text-right">Actions</div>
                     </div>
@@ -271,7 +290,7 @@ const SubcategoryList = () => {
                                 key={sub._id}
                                 className={`group grid grid-cols-1 md:grid-cols-12 gap-6 items-center p-6 premium-card ${sub.status === 0 ? 'opacity-75 grayscale-[0.3]' : ''}`}
                             >
-                                <div className="col-span-7 flex items-center gap-8">
+                                <div className="col-span-5 flex items-center gap-8">
                                     <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10">
                                         {sub.image ? (
                                             <img
@@ -290,6 +309,13 @@ const SubcategoryList = () => {
                                         <p className="text-sm font-medium text-slate-500 dark:text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
                                             {sub.description || 'No metadata description provided.'}
                                         </p>
+                                    </div>
+                                </div>
+
+                                <div className="col-span-2 flex justify-center">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 rounded-xl font-semibold text-xs border border-slate-200/50">
+                                        <ShoppingBag size={14} className="text-indigo-600" strokeWidth={3} />
+                                        {getProductCount(sub._id)} Products
                                     </div>
                                 </div>
 
