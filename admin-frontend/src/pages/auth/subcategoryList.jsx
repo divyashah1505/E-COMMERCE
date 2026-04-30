@@ -18,7 +18,6 @@ const SubcategoryList = () => {
     const productFileRef = useRef(null);
 
     const [subcategories, setSubcategories] = useState([]);
-    const [allProducts, setAllProducts] = useState([]); // New state for product counts
     const [parentCategory, setParentCategory] = useState(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -42,14 +41,8 @@ const SubcategoryList = () => {
         try {
             setLoading(true);
 
-            // Fetch categories and products in parallel
-            const [catRes, prodRes] = await Promise.all([
-                categoryService.getCategoryList(),
-                productService.getProductList()
-            ]);
-
-            const allCats = catRes.data || [];
-            setAllProducts(prodRes.data || []);
+            const res = await categoryService.getCategoryList();
+            const allCats = res.data || [];
 
             const currentParent = allCats.find(
                 c => String(c._id) === String(categoryId)
@@ -64,7 +57,6 @@ const SubcategoryList = () => {
             setParentCategory(currentParent);
             setSubcategories(currentParent.subcategories || []);
         } catch (error) {
-            console.error("Sync Error:", error);
             toast.error("Failed to sync subcategories");
         } finally {
             setLoading(false);
@@ -103,13 +95,6 @@ const SubcategoryList = () => {
         } catch {
             toast.error("Action failed");
         }
-    };
-
-    const getProductCount = (subId) => {
-        return allProducts.filter(p => {
-            const pSubId = p.subcategory?._id || p.subcategory;
-            return String(pSubId) === String(subId);
-        }).length;
     };
 
     const getImageUrl = (img) => {
@@ -157,19 +142,19 @@ const SubcategoryList = () => {
         resetForm();
     };
 
- const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        setSubmitting(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setSubmitting(true);
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("categoryId", categoryId);
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("categoryId", categoryId);
 
-        if (selectedFile) {
-            formData.append("image", selectedFile);
-        }
+            if (selectedFile) {
+                formData.append("image", selectedFile);
+            }
 
             if (editingSubcategory) {
                 await categoryService.updateCategory(editingSubcategory._id, formData);
@@ -179,50 +164,50 @@ const SubcategoryList = () => {
                 toast.success("Added successfully");
             }
 
-        handleCloseModal();
-        fetchData();
-    } catch (error) {
-        console.error(error);
-        toast.error("Operation failed");
-    } finally {
-        setSubmitting(false);
-    }
-};
+            handleCloseModal();
+            fetchData();
+        } catch (error) {
+            console.error(error);
+            toast.error("Operation failed");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
-const handleProductSubmit = async (e) => {
-    e.preventDefault();
+    const handleProductSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!selectedFile) return toast.error("Image required");
+        if (!selectedFile) return toast.error("Image required");
 
-    try {
-        setSubmitting(true);
+        try {
+            setSubmitting(true);
 
-        const formData = new FormData();
+            const formData = new FormData();
 
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("price", price);
-        formData.append("qty", qty);
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("price", price);
+            formData.append("qty", qty);
 
-        //  IMPORTANT FIX
-        formData.append("categoryId", selectedSubId);
+            //  IMPORTANT FIX
+            formData.append("categoryId", selectedSubId);
 
-        formData.append("image", selectedFile);
+            formData.append("image", selectedFile);
 
-        await categoryService.addProduct(formData);
+            await categoryService.addProduct(formData);
 
-        toast.success("Product added successfully");
+            toast.success("Product added successfully");
 
-        handleCloseModal();
-        fetchData();
+            handleCloseModal();
+            fetchData();
 
-    } catch (error) {
-        console.error(error);
-        toast.error(error?.response?.data?.message || "Failed");
-    } finally {
-        setSubmitting(false);
-    }
-};
+        } catch (error) {
+            console.error(error);
+            toast.error(error?.response?.data?.message || "Failed");
+        } finally {
+            setSubmitting(false);
+        }
+    };
     return (
         <div className="premium-page">
             <div className="premium-shell">
@@ -275,8 +260,7 @@ const handleProductSubmit = async (e) => {
 
                 <div className="relative">
                     <div className="hidden md:grid grid-cols-12 gap-6 px-12 py-4 mb-4 premium-table-head">
-                        <div className="col-span-5">SubCategory Identity</div>
-                        <div className="col-span-2 text-center">Inventory</div>
+                        <div className="col-span-7">SubCategory Identity</div>
                         <div className="col-span-2 text-center">Status</div>
                         <div className="col-span-3 text-right">Actions</div>
                     </div>
@@ -287,7 +271,7 @@ const handleProductSubmit = async (e) => {
                                 key={sub._id}
                                 className={`group grid grid-cols-1 md:grid-cols-12 gap-6 items-center p-6 premium-card ${sub.status === 0 ? 'opacity-75 grayscale-[0.3]' : ''}`}
                             >
-                                <div className="col-span-5 flex items-center gap-8">
+                                <div className="col-span-7 flex items-center gap-8">
                                     <div className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10">
                                         {sub.image ? (
                                             <img
@@ -306,13 +290,6 @@ const handleProductSubmit = async (e) => {
                                         <p className="text-sm font-medium text-slate-500 dark:text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
                                             {sub.description || 'No metadata description provided.'}
                                         </p>
-                                    </div>
-                                </div>
-
-                                <div className="col-span-2 flex justify-center">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 rounded-xl font-semibold text-xs border border-slate-200/50">
-                                        <ShoppingBag size={14} className="text-indigo-600" strokeWidth={3} />
-                                        {getProductCount(sub._id)} Products
                                     </div>
                                 </div>
 
