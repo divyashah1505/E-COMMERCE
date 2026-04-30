@@ -93,8 +93,13 @@ const CategoryList = () => {
         setEditingCategory(category);
         setName(category.name);
         setDescription(category.description || "");
-        setPreviewUrl(category.image ? `${IMAGE_BASE_URL}/${category.image}` : null);
-        setIsModalOpen(true);
+        setPreviewUrl(
+            category.image
+                ? (category.image.startsWith("http")
+                    ? category.image
+                    : `${IMAGE_BASE_URL}/${category.image}`)
+                : null
+        ); setIsModalOpen(true);
     };
 
     const handleFileChange = (e) => {
@@ -120,41 +125,41 @@ const CategoryList = () => {
         resetForm();
     };
 
- const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        setSubmitting(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setSubmitting(true);
 
-        const formData = new FormData();
+            const formData = new FormData();
 
-        formData.append("name", name);
-        formData.append("description", description);
+            formData.append("name", name);
+            formData.append("description", description);
 
-        if (selectedCategoryId && isSubcategoryModalOpen) {
-            formData.append("categoryId", selectedCategoryId);
+            if (selectedCategoryId && isSubcategoryModalOpen) {
+                formData.append("categoryId", selectedCategoryId);
+            }
+
+            if (selectedFile) {
+                formData.append("image", selectedFile);
+            }
+
+            if (editingCategory) {
+                await categoryService.updateCategory(editingCategory._id, formData);
+                toast.success("Category updated successfully");
+            } else {
+                await categoryService.addCategory(formData);
+                toast.success("Category created successfully");
+            }
+
+            handleCloseModal();
+            fetchCategories();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Operation failed");
+        } finally {
+            setSubmitting(false);
         }
-
-        if (selectedFile) {
-            formData.append("image", selectedFile);
-        }
-
-        if (editingCategory) {
-            await categoryService.updateCategory(editingCategory._id, formData);
-            toast.success("Category updated successfully");
-        } else {
-            await categoryService.addCategory(formData);
-            toast.success("Category created successfully");
-        }
-
-        handleCloseModal();
-        fetchCategories();
-    } catch (error) {
-        console.error(error);
-        toast.error(error.response?.data?.message || "Operation failed");
-    } finally {
-        setSubmitting(false);
-    }
-};
+    };
 
     return (
         <div className="premium-page">
@@ -220,7 +225,11 @@ const CategoryList = () => {
                                         <div className="h-16 w-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-white/10 transition-all">
                                             {category.image ? (
                                                 <img
-                                                    src={`${category.image}`}
+                                                    src={
+                                                        category.image?.startsWith("http")
+                                                            ? category.image
+                                                            : `${IMAGE_BASE_URL}/${category.image}`
+                                                    }
                                                     className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
