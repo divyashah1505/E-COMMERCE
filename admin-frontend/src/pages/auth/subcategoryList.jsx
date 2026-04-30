@@ -36,6 +36,7 @@ const SubcategoryList = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
+    // ================= FETCH DATA =================
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -66,10 +67,11 @@ const SubcategoryList = () => {
         fetchData();
     }, [categoryId]);
 
+    // ================= FILTER =================
     const filteredList = useMemo(() => {
         return subcategories.filter(item =>
             item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            item.description?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [subcategories, searchTerm]);
 
@@ -110,13 +112,8 @@ const SubcategoryList = () => {
     };
 
     const handleOpenProductModal = (subId) => {
+        resetForm();
         setSelectedSubId(subId);
-        setName("");
-        setDescription("");
-        setPrice("");
-        setQty("");
-        setSelectedFile(null);
-        setPreviewUrl(null);
         setIsProductModalOpen(true);
     };
 
@@ -128,17 +125,21 @@ const SubcategoryList = () => {
         }
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setIsProductModalOpen(false);
-        setEditingSubcategory(null);
-        setSelectedSubId(null);
+    const resetForm = () => {
         setName("");
         setDescription("");
         setPrice("");
         setQty("");
         setSelectedFile(null);
         setPreviewUrl(null);
+        setSelectedSubId(null);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsProductModalOpen(false);
+        setEditingSubcategory(null);
+        resetForm();
     };
 
  const handleSubmit = async (e) => {
@@ -155,13 +156,13 @@ const SubcategoryList = () => {
             formData.append("image", selectedFile);
         }
 
-        if (editingSubcategory) {
-            await categoryService.updateCategory(editingSubcategory._id, formData);
-            toast.success("Subcategory updated successfully");
-        } else {
-            await categoryService.addCategory(formData);
-            toast.success("Subcategory added successfully");
-        }
+            if (editingSubcategory) {
+                await categoryService.updateCategory(editingSubcategory._id, formData);
+                toast.success("Updated successfully");
+            } else {
+                await categoryService.addCategory(formData);
+                toast.success("Added successfully");
+            }
 
         handleCloseModal();
         fetchData();
@@ -173,47 +174,39 @@ const SubcategoryList = () => {
     }
 };
 
-    const handleProductSubmit = async (e) => {
-        e.preventDefault();
+ const handleProductSubmit = async (e) => {
+    e.preventDefault();
 
-        if (Number(price) < 0) return toast.error("Price cannot be negative");
-        if (Number(qty) < 0) return toast.error("Stock quantity cannot be negative");
-        if (!selectedFile) return toast.error("Please upload a product image");
+    if (Number(price) < 0) return toast.error("Price cannot be negative");
+    if (Number(qty) < 0) return toast.error("Stock quantity cannot be negative");
+    if (!selectedFile) return toast.error("Please upload a product image");
 
-        try {
-            setSubmitting(true);
+    try {
+        setSubmitting(true);
 
-            const uploadData = new FormData();
-            uploadData.append("image", selectedFile);
+        const formData = new FormData();
 
-            const uploadRes = await categoryService.uploadImage(uploadData);
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("price", price);
+        formData.append("qty", qty);
+        formData.append("categoryId", categoryId);       // ✅ FIX
+        formData.append("subcategoryId", selectedSubId); // ✅ FIX
+        formData.append("image", selectedFile);          // ✅ DIRECT UPLOAD
 
-            const uploadedImageName = uploadRes?.data?.[0];
+        await categoryService.addProduct(formData);
 
-            if (!uploadedImageName) {
-                throw new Error("Image upload failed");
-            }
+        toast.success("Product added successfully");
+        handleCloseModal();
+        fetchData();
 
-            const productData = {
-                name,
-                description,
-                qty: Number(qty),
-                price: Number(price),
-                categoryId: selectedSubId,
-                image: uploadedImageName
-            };
-
-            await categoryService.addProduct(productData);
-
-            toast.success("Product added successfully");
-            handleCloseModal();
-        } catch (error) {
-            console.error("Product Submit Error:", error);
-            toast.error(error?.response?.data?.message || "Product creation failed");
-        } finally {
-            setSubmitting(false);
-        }
-    };
+    } catch (error) {
+        console.error("Product Submit Error:", error);
+        toast.error(error?.response?.data?.message || "Product creation failed");
+    } finally {
+        setSubmitting(false);
+    }
+};
 
     return (
         <div className="premium-page">
