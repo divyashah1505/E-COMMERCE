@@ -33,10 +33,14 @@ const SubcategoryList = () => {
     // Form States
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [qty, setQty] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    
+    // Product specific states
+    const [productImages, setProductImages] = useState([]);
+    const [productImagePreviews, setProductImagePreviews] = useState([]);
+    const [variants, setVariants] = useState([{ size: '', color: '', stock: '', price: '' }]);
+
     const [activeLightboxImage, setActiveLightboxImage] = useState(null); // Lightbox state
 
     // ================= FETCH DATA =================
@@ -147,11 +151,41 @@ const SubcategoryList = () => {
     const resetForm = () => {
         setName("");
         setDescription("");
-        setPrice("");
-        setQty("");
         setSelectedFile(null);
         setPreviewUrl(null);
+        setProductImages([]);
+        setProductImagePreviews([]);
+        setVariants([{ size: '', color: '', stock: '', price: '' }]);
         setSelectedSubId(null);
+    };
+
+    const handleProductFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setProductImages(prev => [...prev, ...files]);
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setProductImagePreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeProductImage = (index) => {
+        setProductImages(prev => prev.filter((_, i) => i !== index));
+        setProductImagePreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleVariantChange = (index, field, value) => {
+        const updatedVariants = [...variants];
+        updatedVariants[index][field] = value;
+        setVariants(updatedVariants);
+    };
+
+    const addVariant = () => {
+        setVariants([...variants, { size: '', color: '', stock: '', price: '' }]);
+    };
+
+    const removeVariant = (index) => {
+        const updatedVariants = variants.filter((_, i) => i !== index);
+        setVariants(updatedVariants);
     };
 
     const handleCloseModal = () => {
@@ -196,7 +230,9 @@ const SubcategoryList = () => {
     const handleProductSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedFile) return toast.error("Image required");
+        if (!selectedSubId) return toast.error("Please select a subcategory first");
+        if (productImages.length === 0) return toast.error("At least one image is required");
+        if (variants.length === 0) return toast.error("At least one variant is required");
 
         try {
             setSubmitting(true);
@@ -205,13 +241,22 @@ const SubcategoryList = () => {
 
             formData.append("name", name);
             formData.append("description", description);
-            formData.append("price", price);
-            formData.append("qty", qty);
-
-            //  IMPORTANT FIX
             formData.append("categoryId", selectedSubId);
 
-            formData.append("image", selectedFile);
+            // Ensure stock and price are numbers before stringifying
+            const formattedVariants = variants.map(v => ({
+                ...v,
+                stock: Number(v.stock) || 0,
+                price: Number(v.price) || 0
+            }));
+
+            // Append variants as a stringified JSON array
+            formData.append("variants", JSON.stringify(formattedVariants));
+
+            // Append all images
+            productImages.forEach((file) => {
+                formData.append("images", file);
+            });
 
             await categoryService.addProduct(formData);
 
@@ -221,8 +266,9 @@ const SubcategoryList = () => {
             fetchData();
 
         } catch (error) {
-            console.error(error);
-            toast.error(error?.response?.data?.message || "Failed");
+            console.error("Submission Error:", error);
+            const msg = error?.response?.data?.message || "Operation failed";
+            toast.error(msg);
         } finally {
             setSubmitting(false);
         }
@@ -445,7 +491,7 @@ const SubcategoryList = () => {
                         </div>
 
                         <form onSubmit={handleProductSubmit} className="pt-6 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div>
                                         <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Name</label>
@@ -455,36 +501,76 @@ const SubcategoryList = () => {
                                         <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Description</label>
                                         <textarea rows="3" className="premium-input min-h-24 resize-none" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Product details..." required />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Price ($)</label>
-                                            {/* HTML Validation: min="0" */}
-                                            <input type="number" min="0" className="premium-input" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="500" required />
+                                    
+                                    <div className="flex flex-col">
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Images</label>
+                                        <div
+                                            onClick={() => productFileRef.current.click()}
+                                            className="relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-[160px] mb-4"
+                                        >
+                                            <div className="text-center p-6">
+                                                <Upload size={32} className="mx-auto text-indigo-600 mb-3" />
+                                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Add Photos</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Stock Qty</label>
-                                            {/* HTML Validation: min="0" */}
-                                            <input type="number" min="0" className="premium-input" value={qty} onChange={(e) => setQty(e.target.value)} placeholder="10" required />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col">
-                                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Image</label>
-                                    <div
-                                        onClick={() => productFileRef.current.click()}
-                                        className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-[260px]"
-                                    >
-                                        {previewUrl ? (
-                                            <img src={previewUrl} className="h-full w-full object-cover" alt="Product preview" />
-                                        ) : (
-                                            <div className="text-center p-8">
-                                                <Upload size={40} className="mx-auto text-indigo-600 mb-4" />
-                                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Select Product Photo</p>
+                                        <input type="file" multiple ref={productFileRef} className="hidden" accept="image/*" onChange={handleProductFileChange} />
+                                        
+                                        {productImagePreviews.length > 0 && (
+                                            <div className="flex flex-wrap gap-4 mt-2">
+                                                {productImagePreviews.map((preview, idx) => (
+                                                    <div key={idx} className="relative h-20 w-20 rounded-xl overflow-hidden border border-slate-200">
+                                                        <img src={preview} className="h-full w-full object-cover" alt={`Preview ${idx}`} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => { e.stopPropagation(); removeProductImage(idx); }}
+                                                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                                                        >
+                                                            <X size={12} />
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                     </div>
-                                    <input type="file" ref={productFileRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between ml-2">
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Product Variants</label>
+                                        <button type="button" onClick={addVariant} className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 uppercase">
+                                            <Plus size={14} /> Add Variant
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {variants.map((variant, index) => (
+                                            <div key={index} className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl relative group">
+                                                {variants.length > 1 && (
+                                                    <button type="button" onClick={() => removeVariant(index)} className="absolute -top-2 -right-2 p-1.5 bg-rose-100 text-rose-600 rounded-full hover:bg-rose-500 hover:text-white transition-colors">
+                                                        <X size={14} strokeWidth={3} />
+                                                    </button>
+                                                )}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Size</label>
+                                                        <input type="text" className="premium-input text-sm py-2 px-3" value={variant.size} onChange={(e) => handleVariantChange(index, 'size', e.target.value)} placeholder="e.g. L, XL" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Color</label>
+                                                        <input type="text" className="premium-input text-sm py-2 px-3" value={variant.color} onChange={(e) => handleVariantChange(index, 'color', e.target.value)} placeholder="e.g. Red, Black" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Stock</label>
+                                                        <input type="number" min="0" className="premium-input text-sm py-2 px-3" value={variant.stock === '' ? '' : variant.stock} onChange={(e) => handleVariantChange(index, 'stock', e.target.value)} placeholder="0" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Price ($)</label>
+                                                        <input type="number" min="0" className="premium-input text-sm py-2 px-3" value={variant.price === '' ? '' : variant.price} onChange={(e) => handleVariantChange(index, 'price', e.target.value)} placeholder="0" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 

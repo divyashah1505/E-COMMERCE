@@ -21,9 +21,20 @@ export const productService = {
     return response.data;
 },
 
-  // Delete Product
+  // Delete/Deactivate Product
   deleteProduct: async (id) => {
     const response = await axiosInstance.delete(`/product/${id}`);
+    return response.data;
+  },
+
+  deactivateProduct: async (id) => {
+    const response = await axiosInstance.delete(`/product/${id}`);
+    return response.data;
+  },
+
+  // Reactivate Product
+  reactivateProduct: async (id) => {
+    const response = await axiosInstance.put(`/product/reactivate/${id}`);
     return response.data;
   },
 

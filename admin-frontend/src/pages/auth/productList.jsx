@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
     Search, Edit3, Image as ImageIcon,
     Power, ArrowLeft, AlertCircle,
-    DollarSign, LayoutGrid, X, Upload, CheckCircle2
+    DollarSign, LayoutGrid, X, Upload, CheckCircle2, Plus
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from "../../routes/routePaths";
@@ -16,6 +16,7 @@ const ProductList = () => {
     const navigate = useNavigate();
     const { categoryId, subcategoryId } = useParams();
     const fileInputRef = useRef(null);
+    const productFileRef = useRef(null);
 
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,26 +24,32 @@ const ProductList = () => {
     const [subName, setSubName] = useState("Inventory");
 
     // Modal States
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("add"); // 'add' or 'edit'
     const [editingProduct, setEditingProduct] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
     // Form States
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [qty, setQty] = useState("");
-    const [selectedFile, setSelectedFile] = useState(null);
+    
+    // Advanced Product States (Synced with SubcategoryList)
+    const [productImages, setProductImages] = useState([]);
+    const [productImagePreviews, setProductImagePreviews] = useState([]);
+    const [variants, setVariants] = useState([{ size: '', color: '', stock: '', price: '' }]);
+    
     const [previewUrl, setPreviewUrl] = useState(null);
-    const [activeLightboxImage, setActiveLightboxImage] = useState(null); // Lightbox state
+    const [activeLightboxImage, setActiveLightboxImage] = useState(null); 
 
     /**
      * Helper to resolve image URLs (handles absolute and relative paths)
      */
     const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        return `${IMAGE_BASE_URL}/${img}`;
+        // Handle images array or single string
+        const imageSrc = Array.isArray(img) ? img[0] : img;
+        if (!imageSrc) return null;
+        if (imageSrc.startsWith("http")) return imageSrc;
+        return `${IMAGE_BASE_URL}/${imageSrc}`;
     };
 
     /**
@@ -109,75 +116,139 @@ const ProductList = () => {
         }
     };
 
-    const handleEditProduct = (product) => {
-        setEditingProduct(product);
-        setName(product.name);
-        setDescription(product.description || "");
-        setPrice(product.price);
-        setQty(product.qty);
-        setPreviewUrl(getImageUrl(product.image));
-        setIsEditModalOpen(true);
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
-        }
-    };
-
-    const handleCloseModal = () => {
-        setIsEditModalOpen(false);
+    const handleAddProduct = () => {
+        setModalMode("add");
         setEditingProduct(null);
         setName("");
         setDescription("");
-        setPrice("");
-        setQty("");
-        setSelectedFile(null);
+        setProductImages([]);
+        setProductImagePreviews([]);
+        setVariants([{ size: '', color: '', stock: '', price: '' }]);
+        setPreviewUrl(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditProduct = (product) => {
+        setModalMode("edit");
+        setEditingProduct(product);
+        setName(product.name);
+        setDescription(product.description || "");
+        
+        // Load variants
+        if (product.variants && product.variants.length > 0) {
+            setVariants(product.variants.map(v => ({
+                size: v.size || "",
+                color: v.color || "",
+                stock: v.stock || 0,
+                price: v.price || 0
+            })));
+        } else {
+            setVariants([{ size: '', color: '', stock: '', price: '' }]);
+        }
+
+        // Load images
+        setProductImages([]); // We don't have the File objects for existing images
+        if (product.images && product.images.length > 0) {
+            setProductImagePreviews(product.images.map(img => getImageUrl(img)));
+        } else {
+            setProductImagePreviews([]);
+        }
+
+        setIsModalOpen(true);
+    };
+
+    const handleProductFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setProductImages(prev => [...prev, ...files]);
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setProductImagePreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeProductImage = (index) => {
+        setProductImages(prev => prev.filter((_, i) => i !== index));
+        setProductImagePreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleVariantChange = (index, field, value) => {
+        const updatedVariants = [...variants];
+        updatedVariants[index][field] = value;
+        setVariants(updatedVariants);
+    };
+
+    const addVariant = () => {
+        setVariants([...variants, { size: '', color: '', stock: '', price: '' }]);
+    };
+
+    const removeVariant = (index) => {
+        const updatedVariants = variants.filter((_, i) => i !== index);
+        setVariants(updatedVariants);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingProduct(null);
+        setName("");
+        setDescription("");
+        setProductImages([]);
+        setProductImagePreviews([]);
+        setVariants([{ size: '', color: '', stock: '', price: '' }]);
         setPreviewUrl(null);
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (Number(price) < 0 || Number(qty) < 0)
-        return toast.error("Values cannot be negative");
+        if (productImagePreviews.length === 0 && modalMode === "add") 
+            return toast.error("At least one image is required");
+        
+        if (variants.length === 0) 
+            return toast.error("At least one variant is required");
 
-    try {
-        setSubmitting(true);
+        try {
+            setSubmitting(true);
+            const formData = new FormData();
 
-        const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("categoryId", subcategoryId); // Backend expects categoryId for the subcategory relationship
 
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("price", price);
-        formData.append("qty", qty);
+            // Format variants
+            const formattedVariants = variants.map(v => ({
+                ...v,
+                stock: Number(v.stock) || 0,
+                price: Number(v.price) || 0
+            }));
+            formData.append("variants", JSON.stringify(formattedVariants));
 
-        formData.append(
-          "categoryId",
-          editingProduct.categoryId?._id || editingProduct.categoryId
-        );
+            if (modalMode === "add") {
+                // Add all images
+                productImages.forEach((file) => {
+                    formData.append("images", file);
+                });
+                await productService.addProduct(formData);
+                toast.success("Product created successfully");
+            } else {
+                // Update Product logic
+                // If we have new images, append them
+                productImages.forEach((file) => {
+                    formData.append("images", file);
+                });
+                
+                await productService.updateProduct(editingProduct._id, formData);
+                toast.success("Product updated successfully");
+            }
 
-        formData.append("subcategoryId", subcategoryId); // ✅ IMPORTANT
-
-        if (selectedFile) {
-            formData.append("image", selectedFile);
+            handleCloseModal();
+            fetchProducts();
+        } catch (error) {
+            console.error("Product Action Error:", error);
+            toast.error(error.response?.data?.message || "Operation failed");
+        } finally {
+            setSubmitting(false);
         }
-
-        await productService.updateProduct(editingProduct._id, formData);
-
-        toast.success("Product updated successfully");
-        handleCloseModal();
-        fetchProducts();
-
-    } catch (error) {
-        console.error("Product Update Error:", error);
-        toast.error(error.response?.data?.message || "Update failed");
-    } finally {
-        setSubmitting(false);
-    }
-};
+    };
 
     return (
         <div className="premium-page">
@@ -206,6 +277,14 @@ const handleSubmit = async (e) => {
                             Managing products for subcategory: <span className="text-indigo-600 font-semibold">{subName}</span>
                         </p>
                     </div>
+
+                    <button
+                        onClick={handleAddProduct}
+                        className="premium-btn premium-btn-primary flex items-center gap-2 px-8 py-3.5"
+                    >
+                        <Plus size={20} strokeWidth={3} />
+                        Add Product
+                    </button>
                 </header>
 
                 <div className="relative mb-14 max-w-2xl group">
@@ -242,12 +321,12 @@ const handleSubmit = async (e) => {
                             >
                                 <div className="col-span-5 flex items-center gap-8">
                                     <div 
-                                        onClick={() => setActiveLightboxImage(getImageUrl(product.image))}
+                                        onClick={() => setActiveLightboxImage(getImageUrl(product.images))}
                                         className="h-20 w-20 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 cursor-zoom-in group/img relative transition-all"
                                     >
-                                        {product.image ? (
+                                        {product.images && product.images.length > 0 ? (
                                             <>
-                                                <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                <img src={getImageUrl(product.images)} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                                     <Search className="text-white" size={20} />
                                                 </div>
@@ -269,7 +348,8 @@ const handleSubmit = async (e) => {
                                 <div className="col-span-2 flex justify-center">
                                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm border border-emerald-100">
                                         <DollarSign size={14} strokeWidth={3} />
-                                        {product.price?.toLocaleString()}
+                                        {product.variants?.[0]?.price?.toLocaleString() || "0"}
+                                        {product.variants?.length > 1 && "+"}
                                     </div>
                                 </div>
 
@@ -277,7 +357,7 @@ const handleSubmit = async (e) => {
                                     {product.status === 1 ? (
                                         <div className="status-pill bg-blue-50 text-blue-700 border-blue-100">
                                             <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
-                                            {product.qty} UNITS
+                                            {product.variants?.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) || 0} UNITS
                                         </div>
                                     ) : (
                                         <div className="status-pill bg-rose-50 text-rose-600 border-rose-100">
@@ -314,15 +394,17 @@ const handleSubmit = async (e) => {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && (
+            {/* Modal */}
+            {isModalOpen && (
                 <div className="premium-modal">
                     <div className="premium-modal-card max-w-4xl">
                         <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/10">
                             <div>
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Modify Product</h2>
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
+                                    {modalMode === 'add' ? 'Add New Product' : 'Modify Product'}
+                                </h2>
                                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2">
-                                    <CheckCircle2 size={14} /> SECURE UPDATE MODE
+                                    <CheckCircle2 size={14} /> SECURE {modalMode === 'add' ? 'CREATION' : 'UPDATE'} MODE
                                 </p>
                             </div>
                             <button onClick={handleCloseModal} className="p-4 bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-500 rounded-3xl transition-all">
@@ -331,46 +413,91 @@ const handleSubmit = async (e) => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="pt-6 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <div className="space-y-6">
-                                    <div className="group">
-                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Product name</label>
-                                        <input type="text" className="premium-input" value={name} onChange={(e) => setName(e.target.value)} required />
+                                    <div>
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Name</label>
+                                        <input type="text" className="premium-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Titan Watch" required />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Description</label>
-                                        <textarea rows="3" className="premium-input min-h-24 resize-none" value={description} onChange={(e) => setDescription(e.target.value)} required />
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Description</label>
+                                        <textarea rows="3" className="premium-input min-h-24 resize-none" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Product details..." required />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Price</label>
-                                            <input type="number" min="0" className="premium-input" value={price} onChange={(e) => setPrice(e.target.value)} required />
+                                    
+                                    <div className="flex flex-col">
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3 block ml-2">Product Images</label>
+                                        <div
+                                            onClick={() => productFileRef.current.click()}
+                                            className="relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-[160px] mb-4"
+                                        >
+                                            <div className="text-center p-6">
+                                                <Upload size={32} className="mx-auto text-indigo-600 mb-3" />
+                                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Add Photos</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 block ml-1">Stock</label>
-                                            <input type="number" min="0" className="premium-input" value={qty} onChange={(e) => setQty(e.target.value)} required />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col">
-                                    <label className="text-[11px] font-black uppercase text-slate-400 mb-2 block ml-2">Visual Node</label>
-                                    <div onClick={() => fileInputRef.current.click()} className="flex-1 relative group bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-indigo-500 rounded-3xl cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-all duration-500 min-h-60">
-                                        {previewUrl ? (
-                                            <img src={previewUrl} className="h-full w-full object-cover" alt="Preview" />
-                                        ) : (
-                                            <div className="text-center p-8">
-                                                <Upload size={40} className="mx-auto text-indigo-600 mb-4" />
-                                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Update Photo</p>
+                                        <input type="file" multiple ref={productFileRef} className="hidden" accept="image/*" onChange={handleProductFileChange} />
+                                        
+                                        {productImagePreviews.length > 0 && (
+                                            <div className="flex flex-wrap gap-4 mt-2">
+                                                {productImagePreviews.map((preview, idx) => (
+                                                    <div key={idx} className="relative h-20 w-20 rounded-xl overflow-hidden border border-slate-200">
+                                                        <img src={preview} className="h-full w-full object-cover" alt={`Preview ${idx}`} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => { e.stopPropagation(); removeProductImage(idx); }}
+                                                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                                                        >
+                                                            <X size={12} />
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                     </div>
-                                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between ml-2">
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Product Variants</label>
+                                        <button type="button" onClick={addVariant} className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 uppercase">
+                                            <Plus size={14} /> Add Variant
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {variants.map((variant, index) => (
+                                            <div key={index} className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl relative group">
+                                                {variants.length > 1 && (
+                                                    <button type="button" onClick={() => removeVariant(index)} className="absolute -top-2 -right-2 p-1.5 bg-rose-100 text-rose-600 rounded-full hover:bg-rose-500 hover:text-white transition-colors">
+                                                        <X size={14} strokeWidth={3} />
+                                                    </button>
+                                                )}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Size</label>
+                                                        <input type="text" className="premium-input text-sm py-2 px-3" value={variant.size} onChange={(e) => handleVariantChange(index, 'size', e.target.value)} placeholder="e.g. L, XL" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Color</label>
+                                                        <input type="text" className="premium-input text-sm py-2 px-3" value={variant.color} onChange={(e) => handleVariantChange(index, 'color', e.target.value)} placeholder="e.g. Red, Black" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Stock</label>
+                                                        <input type="number" min="0" className="premium-input text-sm py-2 px-3" value={variant.stock === '' ? '' : variant.stock} onChange={(e) => handleVariantChange(index, 'stock', e.target.value)} placeholder="0" required />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Price ($)</label>
+                                                        <input type="number" min="0" className="premium-input text-sm py-2 px-3" value={variant.price === '' ? '' : variant.price} onChange={(e) => handleVariantChange(index, 'price', e.target.value)} placeholder="0" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
                             <button type="submit" disabled={submitting} className="premium-btn premium-btn-primary w-full py-3.5 text-sm uppercase tracking-[0.16em]">
-                                {submitting ? 'COMMITTING...' : 'UPDATE SYSTEM ASSET'}
+                                {submitting ? 'COMMITTING ASSETS...' : modalMode === 'add' ? 'CREATE SYSTEM ASSET' : 'CONFIRM UPDATE'}
                             </button>
                         </form>
                     </div>
